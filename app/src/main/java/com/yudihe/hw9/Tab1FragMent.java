@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +53,9 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
     // ImageView in detail table
     private ImageView changeImageView;
 
+    // Progress bar
+    private ProgressBar progressBar;
+
 
     // Stock symbol name, get from StockActivity;
     private String symbol;
@@ -91,6 +95,9 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         // ImageView in Table
         changeImageView = (ImageView) view.findViewById(R.id.tableChangeImageView);
 
+        // Progress bar
+        progressBar = (ProgressBar) view.findViewById(R.id.detailProgressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
         String url = GlobalVariables.PHP_URL+"?symbol="+symbol+"&action=getStockData";
 
@@ -100,6 +107,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                     public void onResponse(JSONObject response) {
 
                         try {
+                            progressBar.setVisibility(View.INVISIBLE);
                             //String symbolName = response.getString("symbol");
                             tableTextViewSymbol.setText(response.getString("symbol"));
                             tableTextViewLastPrice.setText(response.getString("last price"));
@@ -156,6 +164,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        progressBar.setVisibility(View.INVISIBLE);
                         Toast.makeText(getActivity(), "Http request failed!", Toast.LENGTH_SHORT).show();
                     }
                 });
