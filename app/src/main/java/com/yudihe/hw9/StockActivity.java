@@ -25,13 +25,29 @@ public class StockActivity extends AppCompatActivity {
     private static final String TAG = "StockActivity";
     private SectionPageAdapter mSectionPageAdapter;
     private ViewPager mViewPager;
+    private Toolbar mActionBarToolbar;
 
+    // Stock symbol name, will send to fragment
+    private String symbol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stock);
         Log.d(TAG, "onCreate: Starting");
+
+        // Get data from intent
+        symbol = getIntent().getStringExtra("symbol");
+
+        // Set tool bar title
+        mActionBarToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mActionBarToolbar);
+        getSupportActionBar().setTitle(symbol);
+        //setTitle(symbol);
+
+        // Add back button
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mSectionPageAdapter = new SectionPageAdapter(getSupportFragmentManager());
 
@@ -41,6 +57,9 @@ public class StockActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+
+
 
     }
 
@@ -52,4 +71,7 @@ public class StockActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
     }
 
+    public String getSymbol(){
+        return symbol;
+    }
 }
