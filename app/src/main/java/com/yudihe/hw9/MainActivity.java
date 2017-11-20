@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
                     requestQueue.add(jsonArrayRequest);
 
                 } else {
-                    Toast.makeText(MainActivity.this, "Please enter a stock name or symbol!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Please enter valid charactors and the number of charactors should less than 5!", Toast.LENGTH_LONG).show();
                 }
 
 
