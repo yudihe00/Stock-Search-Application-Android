@@ -1,6 +1,7 @@
 package com.yudihe.hw9;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onResponse(JSONArray response) {
 //                                textView.setText("Trimmed response: " + response.toString());
-                                Toast.makeText(getApplicationContext(), "change!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, "change!", Toast.LENGTH_SHORT).show();
                                 StringBuilder names = new StringBuilder();
                                 names.append("Parsed names from the response: ");
                                 try {
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                Toast.makeText(getApplicationContext(), "Nothing found!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, "Nothing found!", Toast.LENGTH_SHORT).show();
                             }
                         });
                 //add request to queue
@@ -181,10 +182,16 @@ public class MainActivity extends AppCompatActivity {
 
     // Perform get quote when click
     public void getQuote(View v){
-        Toast.makeText(getApplicationContext(), "Get Quete!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "Get Quete!", Toast.LENGTH_SHORT).show();
         acTextView.performValidation();
         if (mValidateResult) {
             Toast.makeText(MainActivity.this, "Correct Text", Toast.LENGTH_LONG).show();
+            //  Initial intent for jump to StockMainACtivity
+            Intent intent = new Intent(MainActivity.this, StockActivity.class);
+            // Put symbol data in intent, transfer to StockMainActivity
+            intent.putExtra("symbol", acTextView.getText().toString());
+            // Jump
+            MainActivity.this.startActivity(intent);
         } else {
             Toast.makeText(MainActivity.this, "Invalid Stock Input!", Toast.LENGTH_LONG).show();
         }
@@ -192,6 +199,6 @@ public class MainActivity extends AppCompatActivity {
 
     // Clear when click
     public void clear(View v){
-        Toast.makeText(getApplicationContext(), "Clear!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "Clear!", Toast.LENGTH_SHORT).show();
     }// end of Clear
 }
