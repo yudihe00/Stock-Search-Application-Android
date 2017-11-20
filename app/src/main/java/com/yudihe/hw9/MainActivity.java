@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
                     requestQueue.add(jsonArrayRequest);
 
                 } else {
-                    Toast.makeText(MainActivity.this, "Invalid Stock Input!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Please enter a stock name or symbol!", Toast.LENGTH_LONG).show();
                 }
 
 
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
             // Jump
             MainActivity.this.startActivity(intent);
         } else {
-            Toast.makeText(MainActivity.this, "Invalid Stock Input!", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "Please enter a stock name or symbol!", Toast.LENGTH_LONG).show();
         }
     } // end of getQuote
 
