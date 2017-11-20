@@ -2,12 +2,15 @@ package com.yudihe.hw9;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +36,23 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
     private TextView textViewTest;
     private RequestQueue requestQueue;
 
+    // Table layout
+    private TableLayout detailTableLayout;
+
+    // TextView in detail table
+    private TextView tableTextViewSymbol;
+    private TextView tableTextViewLastPrice;
+    private TextView tableTextViewChange;
+    private TextView tableTextViewTimeStamp;
+    private TextView tableTextViewOpen;
+    private TextView tableTextViewClose;
+    private TextView tableTextViewRange;
+    private TextView tableTextViewVolume;
+
+    // ImageView in detail table
+    private ImageView changeImageView;
+
+
     // Stock symbol name, get from StockActivity;
     private String symbol;
 
@@ -52,6 +72,25 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         textViewTest.setText("symbol: "+symbol);
         requestQueue = Volley.newRequestQueue(getActivity()); // 'this' is the Context
 
+        // TableLayout
+        detailTableLayout = (TableLayout) view.findViewById(R.id.detailTable);
+
+        // Hide Table
+        detailTableLayout.setVisibility(View.INVISIBLE);
+
+        // TextView in Table
+        tableTextViewSymbol = (TextView) view.findViewById(R.id.textViewStockSymbol);
+        tableTextViewLastPrice = (TextView) view.findViewById(R.id.textViewLastPrice);
+        tableTextViewChange = (TextView) view.findViewById(R.id.textViewChange);
+        tableTextViewTimeStamp = (TextView) view.findViewById(R.id.textViewTimeStamp);
+        tableTextViewOpen = (TextView) view.findViewById(R.id.textViewOpen);
+        tableTextViewClose = (TextView) view.findViewById(R.id.textViewClose);
+        tableTextViewRange = (TextView) view.findViewById(R.id.textViewDayRange);
+        tableTextViewVolume = (TextView) view.findViewById(R.id.textViewVolume);
+
+        // ImageView in Table
+        changeImageView = (ImageView) view.findViewById(R.id.tableChangeImageView);
+
 
         String url = GlobalVariables.PHP_URL+"?symbol="+symbol+"&action=getStockData";
 
@@ -59,6 +98,35 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+
+                        try {
+                            //String symbolName = response.getString("symbol");
+                            tableTextViewSymbol.setText(response.getString("symbol"));
+                            tableTextViewLastPrice.setText(response.getString("last price"));
+
+                            // The Change cell in table
+                            String change = response.getString("change");
+                            String changePercent = response.getString("change percent");
+                            tableTextViewChange.setText(change+"("+changePercent+")");
+                            double changeDouble = Double.parseDouble(change);
+                            if(changeDouble >= 0) {
+                                changeImageView.setImageResource(R.drawable.up);
+                            } else {
+                                changeImageView.setImageResource(R.drawable.down);
+                            }
+
+
+                            tableTextViewTimeStamp.setText(response.getString("time stamp"));
+                            tableTextViewOpen.setText(response.getString("open"));
+                            tableTextViewClose.setText(response.getString("close"));
+                            tableTextViewVolume.setText(response.getString("volume"));
+                            tableTextViewRange.setText(response.getString("day's range"));
+
+                            detailTableLayout.setVisibility(View.VISIBLE);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                         textViewTest.setText("Trimmed response: " + response.toString());
 //                                    Toast.makeText(MainActivity.this, "change!", Toast.LENGTH_SHORT).show();
                         StringBuilder names = new StringBuilder();
