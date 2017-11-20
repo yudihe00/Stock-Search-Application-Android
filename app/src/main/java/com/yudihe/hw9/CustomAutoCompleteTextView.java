@@ -22,7 +22,9 @@ public class CustomAutoCompleteTextView extends android.support.v7.widget.AppCom
     @Override
     protected CharSequence convertSelectionToString(Object selectedItem) {
         /** Each item in the autocompetetextview suggestion list is a hashmap object */
-        HashMap<String, String> hm = (HashMap<String, String>) selectedItem;
-        return hm.get("value");
+        String str=selectedItem.toString();
+        String[] tmp = str.split(" ");
+        str=tmp[0];
+        return str;
     }
 }

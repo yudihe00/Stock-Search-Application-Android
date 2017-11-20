@@ -15,6 +15,7 @@ import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean mValidateResult = false;
     private String pattern = "^[a-zA-Z]{1,5}$";
 
+    // progress bar
+    private ProgressBar spinnerAutoComplete;
+
 
 
     @Override
@@ -61,7 +65,12 @@ public class MainActivity extends AppCompatActivity {
 //        responseName = (TextView) findViewById(R.id.responseName);
         requestQueue = Volley.newRequestQueue(this); // 'this' is the Context
 
+        // Bind components
         acTextView = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextView);
+        spinnerAutoComplete = (ProgressBar)findViewById(R.id.autoCompleteProgressBar);
+        spinnerAutoComplete.setVisibility(View.GONE);
+
+        // Set arrayAdapter for autocomplete
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.select_dialog_item, valueArray);
         final Context context = this;
         acTextView.setThreshold(1);
@@ -100,52 +109,65 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                // Test for http request using volley
+                mValidateResult = false;
+                acTextView.performValidation();
+                if (mValidateResult) {
+                    spinnerAutoComplete.setVisibility(View.VISIBLE);
+                    spinnerAutoComplete.bringToFront();
 
-                String symbol = acTextView.getText().toString();
-                String url = GlobalVariables.PHP_URL+"?name="+symbol;
+                    // Test for http request using volley
 
-                JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                        new Response.Listener<JSONArray>() {
-                            @Override
-                            public void onResponse(JSONArray response) {
+                    String symbol = acTextView.getText().toString();
+                    String url = GlobalVariables.PHP_URL+"?name="+symbol;
+
+                    JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                            new Response.Listener<JSONArray>() {
+                                @Override
+                                public void onResponse(JSONArray response) {
 //                                textView.setText("Trimmed response: " + response.toString());
-                                Toast.makeText(MainActivity.this, "change!", Toast.LENGTH_SHORT).show();
-                                StringBuilder names = new StringBuilder();
-                                names.append("Parsed names from the response: ");
-                                try {
-                                    //adapter.clear();
-                                    valueArray.clear();
-                                    displayArray.clear();
-                                    for(int i = 0; i < response.length(); i++){
-                                        JSONObject jresponse = response.getJSONObject(i);
-                                        String value = jresponse.getString("value");
-                                        valueArray.add(value);
-                                        String display = jresponse.getString("display");
-                                        displayArray.add(display);
+//                                    Toast.makeText(MainActivity.this, "change!", Toast.LENGTH_SHORT).show();
+                                    StringBuilder names = new StringBuilder();
+                                    names.append("Parsed names from the response: ");
+                                    try {
+                                        //adapter.clear();
+                                        valueArray.clear();
+                                        displayArray.clear();
+                                        for(int i = 0; i < response.length(); i++){
+                                            JSONObject jresponse = response.getJSONObject(i);
+                                            String value = jresponse.getString("value");
 
-                                        //acTextView.setAdapter(adapter);
+                                            String display = jresponse.getString("display");
+                                            valueArray.add(value);
+                                            displayArray.add(display);
 
-                                    }
+                                            //acTextView.setAdapter(adapter);
 
-                                    //adapter.notifyDataSetChanged();
-                                    ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.select_dialog_item, valueArray);
-                                    acTextView.setAdapter(adapter);
+                                        }
+
+                                        //adapter.notifyDataSetChanged();
+                                        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.select_dialog_item, displayArray);
+                                        acTextView.setAdapter(adapter);
+                                        spinnerAutoComplete.setVisibility(View.GONE);
 
 //                                    responseName.setText(displayArray.toString());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Toast.makeText(MainActivity.this, "Nothing found!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                //add request to queue
-                requestQueue.add(jsonArrayRequest);
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    Toast.makeText(MainActivity.this, "Nothing found!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                    //add request to queue
+                    requestQueue.add(jsonArrayRequest);
+
+                } else {
+                    Toast.makeText(MainActivity.this, "Invalid Stock Input!", Toast.LENGTH_LONG).show();
+                }
+
 
             }
         });
@@ -182,10 +204,10 @@ public class MainActivity extends AppCompatActivity {
 
     // Perform get quote when click
     public void getQuote(View v){
-        Toast.makeText(MainActivity.this, "Get Quete!", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(MainActivity.this, "Get Quete!", Toast.LENGTH_SHORT).show();
         acTextView.performValidation();
         if (mValidateResult) {
-            Toast.makeText(MainActivity.this, "Correct Text", Toast.LENGTH_LONG).show();
+//            Toast.makeText(MainActivity.this, "Correct Text", Toast.LENGTH_LONG).show();
             //  Initial intent for jump to StockMainACtivity
             Intent intent = new Intent(MainActivity.this, StockActivity.class);
             // Put symbol data in intent, transfer to StockMainActivity
