@@ -5,5 +5,5 @@ package com.yudihe.hw9;
  */
 
 public class GlobalVariables {
-    public static final String PHP_URL = "http://10.123.97.82/multiAjax.php";
+    public static final String PHP_URL = "http://10.123.97.80/multiAjax.php";
 }

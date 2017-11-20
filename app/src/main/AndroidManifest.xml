@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.yudihe.hw9">
 
-    <!--Permit volley-->
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <!-- Permit volley -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -15,9 +15,14 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".StockMainActivity"
+            android:label="@string/title_activity_stock_main"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

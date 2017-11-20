@@ -1,5 +1,7 @@
 package com.yudihe.hw9;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -27,15 +29,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    AutoCompleteTextView acTextView;
+    private AutoCompleteTextView acTextView;
     private RequestQueue requestQueue;
     private TextView textView;
     private  TextView responseName;
 
-    String[] country = {"abxxx","abxsse","assse","axsser","cbxxx","cbxsse","cssse","cxsser"};
+    //String[] country = {"abxxx","abxsse","assse","axsser","cbxxx","cbxsse","cssse","cxsser"};
+    //save value and show for autocomplete array
+    private ArrayList<String> valueArray = new ArrayList<>();
+    private ArrayList<String> displayArray = new ArrayList<>();
+
+    //Validation for autocompleteTextView
+    private boolean mValidateResult = false;
+    private String pattern = "^[a-zA-Z]{1,5}$";
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,14 +56,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Test for http request using volley
-        textView = (TextView) findViewById(R.id.volleyText);
-        responseName = (TextView) findViewById(R.id.responseName);
+//        textView = (TextView) findViewById(R.id.volleyText);
+//        responseName = (TextView) findViewById(R.id.responseName);
         requestQueue = Volley.newRequestQueue(this); // 'this' is the Context
 
         acTextView = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextView);
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.select_dialog_item, country);
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.select_dialog_item, valueArray);
+        final Context context = this;
         acTextView.setThreshold(1);
         acTextView.setAdapter(adapter);
+
+        // Validator for autocompletetext view
+        acTextView.setValidator(new AutoCompleteTextView.Validator() {
+            @Override
+            public boolean isValid(CharSequence text) {
+                if(text.toString().matches(pattern)) {
+                    mValidateResult = true;
+                } else {
+                    mValidateResult = false;
+                }
+                return mValidateResult;
+            }
+
+            @Override
+            public CharSequence fixText(CharSequence invalidText) {
+                return "";
+            }
+        });
+
+
+
         acTextView.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -69,19 +104,18 @@ public class MainActivity extends AppCompatActivity {
                 String symbol = acTextView.getText().toString();
                 String url = GlobalVariables.PHP_URL+"?name="+symbol;
 
-                //save value and show for autocomplete array
-                final ArrayList<String> valueArray = new ArrayList<>();
-                final ArrayList<String> displayArray = new ArrayList<>();
-
                 JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                         new Response.Listener<JSONArray>() {
                             @Override
                             public void onResponse(JSONArray response) {
-                                textView.setText("Trimmed response: " + response.toString());
+//                                textView.setText("Trimmed response: " + response.toString());
                                 Toast.makeText(getApplicationContext(), "change!", Toast.LENGTH_SHORT).show();
                                 StringBuilder names = new StringBuilder();
                                 names.append("Parsed names from the response: ");
                                 try {
+                                    //adapter.clear();
+                                    valueArray.clear();
+                                    displayArray.clear();
                                     for(int i = 0; i < response.length(); i++){
                                         JSONObject jresponse = response.getJSONObject(i);
                                         String value = jresponse.getString("value");
@@ -89,13 +123,15 @@ public class MainActivity extends AppCompatActivity {
                                         String display = jresponse.getString("display");
                                         displayArray.add(display);
 
-                                        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.select_dialog_item, country);
-                                        acTextView.setThreshold(1);
-                                        acTextView.setAdapter(adapter);
+                                        //acTextView.setAdapter(adapter);
 
                                     }
 
-                                    responseName.setText(displayArray.toString());
+                                    //adapter.notifyDataSetChanged();
+                                    ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.select_dialog_item, valueArray);
+                                    acTextView.setAdapter(adapter);
+
+//                                    responseName.setText(displayArray.toString());
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -110,18 +146,19 @@ public class MainActivity extends AppCompatActivity {
                 //add request to queue
                 requestQueue.add(jsonArrayRequest);
 
-
-
-
             }
         });
     } // end of onCreate method
 
-    class AutoCompleteAdapter extends BaseAdapter {
+    class AutoCompleteAdapter extends ArrayAdapter {
+
+        public AutoCompleteAdapter(@NonNull Context context, int resource, @NonNull List objects) {
+            super(context, resource, objects);
+        }
 
         @Override
         public int getCount() {
-            return 0;
+            return valueArray.size();
         }
 
         @Override
@@ -138,5 +175,23 @@ public class MainActivity extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             return null;
         }
-    }
+    } // end of AutoCompleteAdapter, not write
+
+
+
+    // Perform get quote when click
+    public void getQuote(View v){
+        Toast.makeText(getApplicationContext(), "Get Quete!", Toast.LENGTH_SHORT).show();
+        acTextView.performValidation();
+        if (mValidateResult) {
+            Toast.makeText(MainActivity.this, "Correct Text", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(MainActivity.this, "Invalid Stock Input!", Toast.LENGTH_LONG).show();
+        }
+    } // end of getQuote
+
+    // Clear when click
+    public void clear(View v){
+        Toast.makeText(getApplicationContext(), "Clear!", Toast.LENGTH_SHORT).show();
+    }// end of Clear
 }
