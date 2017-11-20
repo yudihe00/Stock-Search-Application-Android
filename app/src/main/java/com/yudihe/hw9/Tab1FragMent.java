@@ -16,6 +16,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -52,12 +53,12 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         requestQueue = Volley.newRequestQueue(getActivity()); // 'this' is the Context
 
 
-        String url = GlobalVariables.PHP_URL+"?name="+symbol;
+        String url = GlobalVariables.PHP_URL+"?symbol="+symbol+"&action=getStockData";
 
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONArray>() {
+        JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONArray response) {
+                    public void onResponse(JSONObject response) {
                         textViewTest.setText("Trimmed response: " + response.toString());
 //                                    Toast.makeText(MainActivity.this, "change!", Toast.LENGTH_SHORT).show();
                         StringBuilder names = new StringBuilder();
@@ -87,7 +88,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getActivity(), "Nothing found!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Http request failed!", Toast.LENGTH_SHORT).show();
                     }
                 });
         //add request to queue
