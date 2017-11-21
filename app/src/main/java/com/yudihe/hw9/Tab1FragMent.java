@@ -1,6 +1,7 @@
 package com.yudihe.hw9;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -8,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -74,6 +76,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
 
     // WebView for charts
     private WebView webViewCharts;
+    Context context;
 
     // Stock symbol name, get from StockActivity;
     private String symbol;
@@ -119,11 +122,8 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
 
         // WebView for charts
         webViewCharts = (WebView) view.findViewById(R.id.webViewChart);
-        WebSettings webSettings = webViewCharts.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webViewCharts.setWebViewClient(new WebViewClient());
 
-        webViewCharts.loadUrl("http://www.superman.com");
+
 
         // TextView for change, work as a button
         changeTextView = (TextView) view.findViewById(R.id.change);
@@ -134,6 +134,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                 changeTextView.setClickable(false);
                 selectIndicator = spinnerIndicators.getSelectedItem().toString();
                 Toast.makeText(getActivity(),"begin to draw "+selectIndicator+" chart",Toast.LENGTH_SHORT).show();
+                drawCharts(symbol,selectIndicator);
             }
         });
 
@@ -195,7 +196,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                             e.printStackTrace();
                         }
 
-                        textViewTest.setText("Trimmed response: " + response.toString());
+                        //textViewTest.setText("Trimmed response: " + response.toString());
 //                                    Toast.makeText(MainActivity.this, "change!", Toast.LENGTH_SHORT).show();
                         StringBuilder names = new StringBuilder();
                         names.append("Parsed names from the response: ");
@@ -239,5 +240,35 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
     public void changeChart(View v){
         changeTextView.setTextColor(Color.parseColor("#aca8a8"));
 
+    }
+
+
+    public class WebAppInterface {
+        Context mContext;
+
+        /** Instantiate the interface and set the context */
+        WebAppInterface(Context c) {
+            mContext = c;
+        }
+
+        /** Show a toast from the web page */
+        @JavascriptInterface
+        public void showToast(String toast) {
+            Toast.makeText(mContext, toast, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void drawCharts(final String symbol, final String indicator) {
+        WebSettings webSettings = webViewCharts.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        //webViewCharts.addJavascriptInterface(new WebAppInterface(getContext()), "Android");
+
+        webViewCharts.setWebViewClient(new WebViewClient());
+        webViewCharts.setWebViewClient(new WebViewClient(){
+            public void onPageFinished(WebView view, String url){
+                webViewCharts.loadUrl("javascript:drawChartOf('" + symbol+"&"+indicator + "')");
+            }
+        });
+        webViewCharts.loadUrl(GlobalVariables.LOCALBASE_URL+ "hw9-1.html");
     }
 }
