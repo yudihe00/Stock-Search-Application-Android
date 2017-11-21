@@ -269,6 +269,6 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                 webViewCharts.loadUrl("javascript:drawChartOf('" + symbol+"&"+indicator + "')");
             }
         });
-        webViewCharts.loadUrl(GlobalVariables.LOCALBASE_URL+ "hw9-1.html");
+        webViewCharts.loadUrl(GlobalVariables.LOCALBASE_URL+ "/hw9/hw9-1.html");
     }
 }
