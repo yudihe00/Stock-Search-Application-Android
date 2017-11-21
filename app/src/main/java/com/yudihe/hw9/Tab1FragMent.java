@@ -1,16 +1,20 @@
 package com.yudihe.hw9;
 
 import android.app.Fragment;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +41,9 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
     private TextView textViewTest;
     private RequestQueue requestQueue;
 
+    // String for the select indicator
+    private String selectIndicator;
+
     // Table layout
     private TableLayout detailTableLayout;
 
@@ -55,6 +62,12 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
 
     // Progress bar
     private ProgressBar progressBar;
+
+    // Spinner for indicators
+    private Spinner spinnerIndicators;
+
+    // TextView for change, work as a button
+    private TextView changeTextView;
 
 
     // Stock symbol name, get from StockActivity;
@@ -99,6 +112,41 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         progressBar = (ProgressBar) view.findViewById(R.id.detailProgressBar);
         progressBar.setVisibility(View.VISIBLE);
 
+        // TextView for change, work as a button
+        changeTextView = (TextView) view.findViewById(R.id.change);
+
+        changeTextView.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                changeTextView.setTextColor(Color.parseColor("#aca8a8"));
+                changeTextView.setClickable(false);
+                Toast.makeText(getActivity(),"click",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Spinner for Indicators
+        spinnerIndicators = (Spinner) view.findViewById(R.id.spinnerIndicators);
+        ArrayAdapter<String> indicatorAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_list_item_1,getResources().getStringArray(R.array.indicators));
+        indicatorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerIndicators.setAdapter(indicatorAdapter);
+
+        // Spinner select event
+        spinnerIndicators.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // When item selected change to black color and the change button is clickable
+                changeTextView.setTextColor(Color.parseColor("#000000"));
+                changeTextView.setClickable(true);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+                changeTextView.setClickable(false);
+            }
+
+        });
+
         String url = GlobalVariables.PHP_URL+"?symbol="+symbol+"&action=getStockData";
 
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -108,11 +156,16 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
 
                         try {
                             progressBar.setVisibility(View.INVISIBLE);
-                            //String symbolName = response.getString("symbol");
+                            //Set detail table
                             tableTextViewSymbol.setText(response.getString("symbol"));
                             tableTextViewLastPrice.setText(response.getString("last price"));
+                            tableTextViewTimeStamp.setText(response.getString("time stamp"));
+                            tableTextViewOpen.setText(response.getString("open"));
+                            tableTextViewClose.setText(response.getString("close"));
+                            tableTextViewVolume.setText(response.getString("volume"));
+                            tableTextViewRange.setText(response.getString("day's range"));
 
-                            // The Change cell in table
+                            // Set change cell in table
                             String change = response.getString("change");
                             String changePercent = response.getString("change percent");
                             tableTextViewChange.setText(change+"("+changePercent+")");
@@ -122,14 +175,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                             } else {
                                 changeImageView.setImageResource(R.drawable.down);
                             }
-
-
-                            tableTextViewTimeStamp.setText(response.getString("time stamp"));
-                            tableTextViewOpen.setText(response.getString("open"));
-                            tableTextViewClose.setText(response.getString("close"));
-                            tableTextViewVolume.setText(response.getString("volume"));
-                            tableTextViewRange.setText(response.getString("day's range"));
-
+                            // Set table visible
                             detailTableLayout.setVisibility(View.VISIBLE);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -173,6 +219,11 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
 
 
         return  view;
+
+    } // End of onCreateView
+
+    public void changeChart(View v){
+        changeTextView.setTextColor(Color.parseColor("#aca8a8"));
 
     }
 }
