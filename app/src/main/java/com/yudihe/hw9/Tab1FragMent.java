@@ -8,6 +8,9 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -69,6 +72,8 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
     // TextView for change, work as a button
     private TextView changeTextView;
 
+    // WebView for charts
+    private WebView webViewCharts;
 
     // Stock symbol name, get from StockActivity;
     private String symbol;
@@ -112,6 +117,14 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         progressBar = (ProgressBar) view.findViewById(R.id.detailProgressBar);
         progressBar.setVisibility(View.VISIBLE);
 
+        // WebView for charts
+        webViewCharts = (WebView) view.findViewById(R.id.webViewChart);
+        WebSettings webSettings = webViewCharts.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webViewCharts.setWebViewClient(new WebViewClient());
+
+        webViewCharts.loadUrl("http://www.superman.com");
+
         // TextView for change, work as a button
         changeTextView = (TextView) view.findViewById(R.id.change);
 
@@ -119,7 +132,8 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
             public void onClick(View v) {
                 changeTextView.setTextColor(Color.parseColor("#aca8a8"));
                 changeTextView.setClickable(false);
-                Toast.makeText(getActivity(),"click",Toast.LENGTH_SHORT).show();
+                selectIndicator = spinnerIndicators.getSelectedItem().toString();
+                Toast.makeText(getActivity(),"begin to draw "+selectIndicator+" chart",Toast.LENGTH_SHORT).show();
             }
         });
 
