@@ -48,6 +48,8 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
 
     // String for the select indicator
     private String selectIndicator;
+    private String currDrawIndicator; // change by click change
+    private String currSelectIndicator; // change by spinner select
 
     // Table layout
     private TableLayout detailTableLayout;
@@ -133,6 +135,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                 changeTextView.setTextColor(Color.parseColor("#aca8a8"));
                 changeTextView.setClickable(false);
                 selectIndicator = spinnerIndicators.getSelectedItem().toString();
+                currDrawIndicator = selectIndicator;
                 Toast.makeText(getActivity(),"begin to draw "+selectIndicator+" chart",Toast.LENGTH_SHORT).show();
                 drawCharts(symbol,selectIndicator);
             }
@@ -151,7 +154,13 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // When item selected change to black color and the change button is clickable
                 changeTextView.setTextColor(Color.parseColor("#000000"));
-                changeTextView.setClickable(true);
+                currSelectIndicator = spinnerIndicators.getSelectedItem().toString();
+                if (currSelectIndicator != currDrawIndicator){
+                    changeTextView.setClickable(true);
+                } else {
+                    changeTextView.setClickable(false);
+                    changeTextView.setTextColor(Color.parseColor("#aca8a8"));
+                }
             }
 
             @Override
