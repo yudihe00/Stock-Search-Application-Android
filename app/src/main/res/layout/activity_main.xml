@@ -71,4 +71,14 @@
         android:layout_below="@+id/app_title"
         android:layout_centerHorizontal="true" />
 
+    <ListView
+        android:id="@+id/ListViewFav"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/getQuote"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="14dp" />
+
 </android.widget.RelativeLayout>
