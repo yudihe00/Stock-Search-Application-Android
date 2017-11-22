@@ -8,6 +8,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/textViewError"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/detailTitle"
+            android:textColor="@color/black"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:textSize="30sp"
+            android:visibility="invisible"
+            android:text="Failed to load Data." />
+
         <ProgressBar
             android:id="@+id/detailProgressBar"
             style="?android:attr/progressBarStyle"

@@ -14,6 +14,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -33,6 +34,9 @@ public class Tab2FragMent extends android.support.v4.app.Fragment {
     // WebView for charts
     private WebView webViewCharts;
 
+    // TextView
+    private TextView textViewError;
+
     // Progress bar
     private ProgressBar progressBar;
 
@@ -51,8 +55,11 @@ public class Tab2FragMent extends android.support.v4.app.Fragment {
         progressBar = (ProgressBar) view.findViewById(R.id.progressBarHis);
         progressBar.setVisibility(View.VISIBLE);
 
-        //
+        //activity
         activity = getActivity();
+
+        // TextView for error
+        textViewError = (TextView) view.findViewById(R.id.textViewError2);
 
 
         // WebView for charts
@@ -112,6 +119,16 @@ public class Tab2FragMent extends android.support.v4.app.Fragment {
                 @Override
                 public void run() {
                     progressBar.setVisibility(View.GONE);
+                }
+            });
+        }
+        @JavascriptInterface
+        public void showError() {
+            // change UI on ui thread
+            ((Activity)activity).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    textViewError.setVisibility(View.VISIBLE);
                 }
             });
         }

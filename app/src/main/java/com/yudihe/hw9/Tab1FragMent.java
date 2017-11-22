@@ -77,6 +77,9 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
     private TextView tableTextViewRange;
     private TextView tableTextViewVolume;
 
+    // TextView for error
+    private  TextView textViewError;
+
     // ImageView in detail table
     private ImageView changeImageView;
 
@@ -138,6 +141,9 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         // Hide Table
         detailTableLayout.setVisibility(View.INVISIBLE);
 
+        // TextView for error
+        textViewError = (TextView)view.findViewById(R.id.textViewError);
+
         // TextView in Table
         tableTextViewSymbol = (TextView) view.findViewById(R.id.textViewStockSymbol);
         tableTextViewLastPrice = (TextView) view.findViewById(R.id.textViewLastPrice);
@@ -167,21 +173,17 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         callbackManager = CallbackManager.Factory.create();
 
         imageViewFbShare.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                ShareLinkContent content = new ShareLinkContent.Builder()
-//                        .setContentUrl(Uri.parse("https://developers.facebook.com"))
-//                        .build();
-//                shareDialog.show(content);
-//
-//            }
-
             @Override
             public void onClick(View v) {
-                ShareLinkContent content = new ShareLinkContent.Builder()
-                        .setContentUrl(Uri.parse(currDrawUrl))
-                        .build();
-                shareDialog.show(content);
+                if(currDrawUrl!="") {
+                    ShareLinkContent content = new ShareLinkContent.Builder()
+                            .setContentUrl(Uri.parse(currDrawUrl))
+                            .build();
+                    shareDialog.show(content);
+                } else {
+                    Toast.makeText(getActivity(),"Highchart Export Failed, cannot share on Facebook!",
+                            Toast.LENGTH_SHORT).show();
+                }
 
             }
 
@@ -268,17 +270,15 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                             e.printStackTrace();
                         }
 
-                        //textViewTest.setText("Trimmed response: " + response.toString());
-//                                    Toast.makeText(MainActivity.this, "change!", Toast.LENGTH_SHORT).show();
-                        StringBuilder names = new StringBuilder();
-                        names.append("Parsed names from the response: ");
+
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         progressBar.setVisibility(View.INVISIBLE);
-                        Toast.makeText(getActivity(), "Http request failed!", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getActivity(), "Http request failed!", Toast.LENGTH_SHORT).show();
+                        textViewError.setVisibility(View.VISIBLE);
                     }
                 });
         //add request to queue

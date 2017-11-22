@@ -44,19 +44,22 @@ public class Tab3FragMent extends android.support.v4.app.Fragment {
     // ListView for news
     ListView listViewNews;
 
+    // TextView for error
+    TextView textViewError;
+
     // Stock symbol name, get from StockActivity;
     private String symbol;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.tab3_fragment,container,false);
+        final View view = inflater.inflate(R.layout.tab3_fragment,container,false);
 
         // Get symbol name
         symbol = ((StockActivity)getActivity()).getSymbol();
 
-        // TextView for test
-        //textViewTest = (TextView) view.findViewById(R.id.textViewTest);
+        // TextView for error
+        textViewError = (TextView) view.findViewById(R.id.textViewError3);
 
         // ListView for news
         listViewNews = (ListView) view.findViewById(R.id.listViewNews);
@@ -113,7 +116,8 @@ public class Tab3FragMent extends android.support.v4.app.Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getActivity(), "News request failed!", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getActivity(), "News request failed!", Toast.LENGTH_SHORT).show();
+                        textViewError.setVisibility(View.VISIBLE);
                     }
                 });
         //add request to queue
