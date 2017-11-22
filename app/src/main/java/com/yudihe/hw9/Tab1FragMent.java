@@ -36,6 +36,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+// for fb sdk
+import com.facebook.FacebookSdk;
+
 /**
  * Created by heyudi on 11/19/17.
  */
