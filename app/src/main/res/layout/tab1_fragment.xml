@@ -282,6 +282,35 @@
             android:layout_marginTop="5dp"
             android:text="Tab1" />
 
+        <ImageView
+            android:id="@+id/fbButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignEnd="@+id/detailTitle"
+
+            android:layout_alignRight="@+id/detailTitle"
+            android:layout_alignTop="@+id/detailTitle"
+            android:layout_marginEnd="67dp"
+            android:layout_marginRight="67dp"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            app:srcCompat="@drawable/facebook" />
+
+        <ImageView
+            android:id="@+id/favButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignEnd="@+id/detailTitle"
+            android:layout_alignRight="@+id/detailTitle"
+            android:layout_alignTop="@+id/detailTitle"
+            android:layout_marginEnd="13dp"
+            android:layout_marginRight="13dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:clickable="true"
+            app:srcCompat="@drawable/empty" />
+
     </RelativeLayout>
 
 </ScrollView>

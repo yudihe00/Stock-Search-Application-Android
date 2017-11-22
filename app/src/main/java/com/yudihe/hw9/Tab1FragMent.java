@@ -2,7 +2,10 @@ package com.yudihe.hw9;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
@@ -37,7 +40,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 // for fb sdk
+import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  * Created by heyudi on 11/19/17.
@@ -86,6 +95,21 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
     // Stock symbol name, get from StockActivity;
     private String symbol;
 
+    // ImageView for fbshare and favorite, work as buttons
+    private ImageView imageViewFbShare;
+    private ImageView imageViewFav;
+
+
+    // share dialogue
+    ShareDialog shareDialog;
+    CallbackManager callbackManager;
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -96,6 +120,8 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
 //                Toast.makeText(getActivity(), "test for tab1", Toast.LENGTH_SHORT).show();
 //            }
 //        });
+
+
 
         textViewTest = (TextView) view.findViewById(R.id.textViewTest);
         symbol = ((StockActivity)getActivity()).getSymbol();
@@ -129,6 +155,29 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         webViewCharts = (WebView) view.findViewById(R.id.webViewChart);
 
 
+        // ImageView for fbshare and favorite
+        imageViewFbShare = (ImageView) view.findViewById(R.id.fbButton);
+        imageViewFav = (ImageView) view.findViewById(R.id.favButton);
+
+        shareDialog = new ShareDialog(this);
+        callbackManager = CallbackManager.Factory.create();
+
+        imageViewFbShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShareLinkContent content = new ShareLinkContent.Builder()
+                        .setContentUrl(Uri.parse("https://developers.facebook.com"))
+                        .build();
+                shareDialog.show(content);
+
+            }
+        }
+
+
+
+        );
+
+
 
         // TextView for change, work as a button
         changeTextView = (TextView) view.findViewById(R.id.change);
@@ -158,7 +207,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                 // When item selected change to black color and the change button is clickable
                 changeTextView.setTextColor(Color.parseColor("#000000"));
                 currSelectIndicator = spinnerIndicators.getSelectedItem().toString();
-                if (currSelectIndicator != currDrawIndicator){
+                if (!currSelectIndicator.equals(currDrawIndicator)){
                     changeTextView.setClickable(true);
                 } else {
                     changeTextView.setClickable(false);
@@ -212,26 +261,6 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
 //                                    Toast.makeText(MainActivity.this, "change!", Toast.LENGTH_SHORT).show();
                         StringBuilder names = new StringBuilder();
                         names.append("Parsed names from the response: ");
-//                        try {
-//                            //adapter.clear();
-////                            valueArray.clear();
-////                            displayArray.clear();
-//                            for(int i = 0; i < response.length(); i++){
-//                                JSONObject jresponse = response.getJSONObject(i);
-//                                String value = jresponse.getString("value");
-//
-//                                String display = jresponse.getString("display");
-////                                valueArray.add(value);
-////                                displayArray.add(display);
-//
-//                                //acTextView.setAdapter(adapter);
-//
-//                            }
-//
-////                                    responseName.setText(displayArray.toString());
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
                     }
                 },
                 new Response.ErrorListener() {
