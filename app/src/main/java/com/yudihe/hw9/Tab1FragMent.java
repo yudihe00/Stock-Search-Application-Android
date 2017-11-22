@@ -61,6 +61,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
     // String for the select indicator
     private String selectIndicator;
     private String currDrawIndicator; // change by click change
+    private String currDrawUrl;
     private String currSelectIndicator; // change by spinner select
 
     // Table layout
@@ -90,7 +91,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
 
     // WebView for charts
     private WebView webViewCharts;
-    Context context;
+    private Context context;
 
     // Stock symbol name, get from StockActivity;
     private String symbol;
@@ -128,6 +129,9 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         textViewTest.setText("symbol: "+symbol);
         requestQueue = Volley.newRequestQueue(getActivity()); // 'this' is the Context
 
+        // context
+        context = getActivity();
+
         // TableLayout
         detailTableLayout = (TableLayout) view.findViewById(R.id.detailTable);
 
@@ -163,19 +167,25 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         callbackManager = CallbackManager.Factory.create();
 
         imageViewFbShare.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ShareLinkContent content = new ShareLinkContent.Builder()
+//                        .setContentUrl(Uri.parse("https://developers.facebook.com"))
+//                        .build();
+//                shareDialog.show(content);
+//
+//            }
+
             @Override
             public void onClick(View v) {
                 ShareLinkContent content = new ShareLinkContent.Builder()
-                        .setContentUrl(Uri.parse("https://developers.facebook.com"))
+                        .setContentUrl(Uri.parse(currDrawUrl))
                         .build();
                 shareDialog.show(content);
 
             }
-        }
 
-
-
-        );
+        });
 
 
 
@@ -188,6 +198,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                 changeTextView.setClickable(false);
                 selectIndicator = spinnerIndicators.getSelectedItem().toString();
                 currDrawIndicator = selectIndicator;
+                currDrawUrl = "";
                 Toast.makeText(getActivity(),"begin to draw "+selectIndicator+" chart",Toast.LENGTH_SHORT).show();
                 drawCharts(symbol,selectIndicator);
             }
@@ -297,12 +308,20 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         public void showToast(String toast) {
             Toast.makeText(mContext, toast, Toast.LENGTH_SHORT).show();
         }
+
+
+        @JavascriptInterface
+        public void saveChartUrl(String url) {
+            currDrawUrl = url;
+        }
+
     }
 
     private void drawCharts(final String symbol, final String indicator) {
         WebSettings webSettings = webViewCharts.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        //webViewCharts.addJavascriptInterface(new WebAppInterface(getContext()), "Android");
+        webViewCharts.addJavascriptInterface(new WebAppInterface(context), "AndroidInterface");
+
 
         webViewCharts.setWebViewClient(new WebViewClient());
         webViewCharts.setWebViewClient(new WebViewClient(){

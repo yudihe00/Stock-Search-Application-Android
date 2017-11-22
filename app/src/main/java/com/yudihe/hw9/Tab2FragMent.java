@@ -115,5 +115,6 @@ public class Tab2FragMent extends android.support.v4.app.Fragment {
                 }
             });
         }
+
     }
 }
