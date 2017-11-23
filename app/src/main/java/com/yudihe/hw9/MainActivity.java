@@ -424,7 +424,8 @@ public class MainActivity extends AppCompatActivity {
                             //Set detail table
                             String symbol=response.getString("symbol");
                             String price = response.getString("last price");
-                            String timestamp = Long.toString(new Date().getTime());
+//                            String timestamp = Long.toString(new Date().getTime());
+                            String timestamp = Integer.toString(favSymbolList.indexOf(symbol));
                             // Set change cell in table
                             String change = response.getString("change");
                             String changePercent = response.getString("change percent");
