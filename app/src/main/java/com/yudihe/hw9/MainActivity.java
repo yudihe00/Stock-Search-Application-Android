@@ -15,6 +15,7 @@ import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,12 @@ public class MainActivity extends AppCompatActivity {
 
     // progress bar
     private ProgressBar spinnerAutoComplete;
+
+    // Fav ListView
+    private ListView listViewFav;
+
+    // Fav arraylist
+    private ArrayList<FavoriteSymbol> favInfoList;
 
 
 
@@ -93,8 +100,6 @@ public class MainActivity extends AppCompatActivity {
                 return "";
             }
         });
-
-
 
         acTextView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -171,6 +176,17 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        // Fav ListView
+        listViewFav = (ListView) findViewById(R.id.ListViewFav);
+        favInfoList = new ArrayList<FavoriteSymbol>();
+        favInfoList.add(new FavoriteSymbol("AAPL","5","a","a","a"));
+        favInfoList.add(new FavoriteSymbol("B","5","a","a","a"));
+        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));
+        FavAdapter favAdapter = new FavAdapter(this, R.layout.fav_row,favInfoList);
+        listViewFav.setAdapter(favAdapter);
+
+
     } // end of onCreate method
 
     class AutoCompleteAdapter extends ArrayAdapter {
@@ -215,7 +231,8 @@ public class MainActivity extends AppCompatActivity {
             // Jump
             MainActivity.this.startActivity(intent);
         } else {
-            Toast.makeText(MainActivity.this, "Please enter a stock name or symbol!", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "Please enter a stock name or symbol!",
+                    Toast.LENGTH_LONG).show();
         }
     } // end of getQuote
 
