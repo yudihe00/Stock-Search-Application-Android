@@ -110,9 +110,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public CharSequence fixText(CharSequence invalidText) {
-                return "";
+                return invalidText.toString();
             }
         });
+
 
         acTextView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -143,48 +144,53 @@ public class MainActivity extends AppCompatActivity {
                     String url = GlobalVariables.PHP_URL+"?name="+symbol;
 
                     JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                            new Response.Listener<JSONArray>() {
-                                @Override
-                                public void onResponse(JSONArray response) {
+                        new Response.Listener<JSONArray>() {
+                            @Override
+                            public void onResponse(JSONArray response) {
 //                                textView.setText("Trimmed response: " + response.toString());
 //                                    Toast.makeText(MainActivity.this, "change!", Toast.LENGTH_SHORT).show();
-                                    StringBuilder names = new StringBuilder();
-                                    names.append("Parsed names from the response: ");
-                                    try {
-                                        //adapter.clear();
-                                        valueArray.clear();
-                                        displayArray.clear();
-                                        for(int i = 0; i < response.length(); i++){
-                                            JSONObject jresponse = response.getJSONObject(i);
-                                            String value = jresponse.getString("value");
+                                StringBuilder names = new StringBuilder();
+                                names.append("Parsed names from the response: ");
+                                try {
+                                    //adapter.clear();
+                                    valueArray.clear();
+                                    displayArray.clear();
+                                    for(int i = 0; i < response.length(); i++){
+                                        JSONObject jresponse = response.getJSONObject(i);
+                                        String value = jresponse.getString("value");
 
-                                            String display = jresponse.getString("display");
-                                            valueArray.add(value);
-                                            displayArray.add(display);
+                                        String display = jresponse.getString("display");
+                                        valueArray.add(value);
+                                        displayArray.add(display);
 
-                                            // acTextView.setAdapter(adapter);
+                                        // acTextView.setAdapter(adapter);
 
-                                        }
+                                    }
 
-                                        //adapter.notifyDataSetChanged();
-                                        adapter = new ArrayAdapter(context, android.R.layout.select_dialog_item, displayArray);
-                                        acTextView.setAdapter(adapter);
+                                    //adapter.notifyDataSetChanged();
+                                    adapter = new ArrayAdapter(context, android.R.layout.select_dialog_item, displayArray);
+                                    acTextView.setAdapter(adapter);
+
+                                    // The first autocomplete always not shown, need to set dropdown view
+                                    if(acTextView.getText().toString().length()==1) {
                                         acTextView.showDropDown();
-                                        spinnerAutoComplete.setVisibility(View.GONE);
+                                    }
+
+                                    spinnerAutoComplete.setVisibility(View.GONE);
 
 //                                    responseName.setText(displayArray.toString());
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                            },
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    Toast.makeText(MainActivity.this, "Auto-Complete request failed.", Toast.LENGTH_SHORT).show();
-                                    spinnerAutoComplete.setVisibility(View.GONE);
-                                }
-                            });
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Toast.makeText(MainActivity.this, "Auto-Complete request failed.", Toast.LENGTH_SHORT).show();
+                                spinnerAutoComplete.setVisibility(View.GONE);
+                            }
+                        });
                     //add request to queue
                     requestQueue.add(jsonArrayRequest);
 
@@ -197,13 +203,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        acTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                acTextView.dismissDropDown();
 
-            }
-        });
 
         // Fav load progressBar
         spinnerFavLoading = (ProgressBar) findViewById(R.id.progressLoadFav);
@@ -231,36 +231,10 @@ public class MainActivity extends AppCompatActivity {
 
     } // end of onCreate method
 
-    class AutoCompleteAdapter extends ArrayAdapter {
-
-        public AutoCompleteAdapter(@NonNull Context context, int resource, @NonNull List objects) {
-            super(context, resource, objects);
-        }
-
-        @Override
-        public int getCount() {
-            return valueArray.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
-        }
-    } // end of AutoCompleteAdapter, not write
 
     // Up date FavSymbolInfoList
     private void upDateSymbolInfoList(final String symbol, final Context context) {
-        spinnerAutoComplete.setVisibility(View.VISIBLE);
+        //spinnerAutoComplete.setVisibility(View.VISIBLE);
         String url = GlobalVariables.PHP_URL+"?symbol="+symbol+"&action=getStockData";
 
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -269,7 +243,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
 
                         try {
-                            spinnerAutoComplete.setVisibility(View.INVISIBLE);
+                            //spinnerAutoComplete.setVisibility(View.INVISIBLE);
+                            //spinnerFavLoading.setVisibility(View.VISIBLE);
                             //Set detail table
                             String symbol=response.getString("symbol");
                             String price = response.getString("last price");

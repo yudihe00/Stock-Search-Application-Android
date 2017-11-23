@@ -27,6 +27,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -106,6 +107,9 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
 
     // FavList, store the symbol of favorite
     private ArrayList<String> favList;
+
+    // time out
+    private int MY_SOCKET_TIMEOUT_MS = 8000;
 
 
     // share dialogue
@@ -300,6 +304,13 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                         textViewError.setVisibility(View.VISIBLE);
                     }
                 });
+
+        // timeout issue
+        jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
+                MY_SOCKET_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
         //add request to queue
         requestQueue.add(jsonArrayRequest);
 
