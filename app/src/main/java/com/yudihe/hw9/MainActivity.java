@@ -12,9 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +26,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -31,11 +34,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Autocomplete
     private AutoCompleteTextView acTextView;
+    private ArrayAdapter adapter;
+
     private RequestQueue requestQueue;
     private TextView textView;
     private  TextView responseName;
@@ -51,6 +58,19 @@ public class MainActivity extends AppCompatActivity {
 
     // progress bar
     private ProgressBar spinnerAutoComplete;
+    private ProgressBar spinnerFavLoading;
+
+    // Fav ListView
+    private ListView listViewFav;
+
+    // Fav arraylist
+    private ArrayList<FavoriteSymbol> favInfoList;
+
+    // Fav symble name list, get from singlton
+    private ArrayList<String> favSymbolList;
+
+    // Number of Fav request done
+    private int numFavReqDone;
 
 
 
@@ -68,13 +88,13 @@ public class MainActivity extends AppCompatActivity {
         // Bind components
         acTextView = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextView);
         spinnerAutoComplete = (ProgressBar)findViewById(R.id.autoCompleteProgressBar);
-        spinnerAutoComplete.setVisibility(View.GONE);
+        spinnerAutoComplete.setVisibility(View.INVISIBLE);
 
         // Set arrayAdapter for autocomplete
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.select_dialog_item, valueArray);
+        //adapter = new ArrayAdapter(this, android.R.layout.select_dialog_item, valueArray);
         final Context context = this;
         acTextView.setThreshold(1);
-        acTextView.setAdapter(adapter);
+        //acTextView.setAdapter(adapter);
 
         // Validator for autocompletetext view
         acTextView.setValidator(new AutoCompleteTextView.Validator() {
@@ -95,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
         acTextView.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -111,9 +130,13 @@ public class MainActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 mValidateResult = false;
                 acTextView.performValidation();
+
                 if (mValidateResult) {
                     spinnerAutoComplete.setVisibility(View.VISIBLE);
                     spinnerAutoComplete.bringToFront();
+
+                    // Clear adapter
+                    // acTextView.setAdapter((ArrayAdapter<String>)null);
 
                     // Test for http request using volley
 
@@ -121,62 +144,59 @@ public class MainActivity extends AppCompatActivity {
                     String url = GlobalVariables.PHP_URL+"?name="+symbol;
 
                     JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                        new Response.Listener<JSONArray>() {
-                            @Override
-                            public void onResponse(JSONArray response) {
+                            new Response.Listener<JSONArray>() {
+                                @Override
+                                public void onResponse(JSONArray response) {
 //                                textView.setText("Trimmed response: " + response.toString());
 //                                    Toast.makeText(MainActivity.this, "change!", Toast.LENGTH_SHORT).show();
+                                    StringBuilder names = new StringBuilder();
+                                    names.append("Parsed names from the response: ");
+                                    try {
+                                        //adapter.clear();
+                                        valueArray.clear();
+                                        displayArray.clear();
+                                        for(int i = 0; i < response.length(); i++){
+                                            JSONObject jresponse = response.getJSONObject(i);
+                                            String value = jresponse.getString("value");
 
-                                StringBuilder names = new StringBuilder();
-                                names.append("Parsed names from the response: ");
-                                try {
-                                    //adapter.clear();
-                                    valueArray.clear();
-                                    displayArray.clear();
-                                    for(int i = 0; i < response.length(); i++){
-                                        JSONObject jresponse = response.getJSONObject(i);
-                                        String value = jresponse.getString("value");
+                                            String display = jresponse.getString("display");
+                                            valueArray.add(value);
+                                            displayArray.add(display);
 
-                                        String display = jresponse.getString("display");
-                                        valueArray.add(value);
-                                        displayArray.add(display);
+                                            // acTextView.setAdapter(adapter);
 
-                                        // acTextView.setAdapter(adapter);
+                                        }
 
+                                        //adapter.notifyDataSetChanged();
+                                        adapter = new ArrayAdapter(context, android.R.layout.select_dialog_item, displayArray);
+                                        acTextView.setAdapter(adapter);
 
-                                    }
+                                        // The first autocomplete always not shown, need to set dropdown view
+                                        if(acTextView.getText().toString().length()==1) {
+                                            acTextView.showDropDown();
+                                        }
 
-
-                                    //adapter.notifyDataSetChanged();
-                                    adapter = new ArrayAdapter(context, android.R.layout.select_dialog_item, displayArray);
-                                    acTextView.setAdapter(adapter);
-
-                                    // The first autocomplete always not shown, need to set dropdown view
-                                    if(acTextView.getText().toString().length()==1) {
-                                        acTextView.showDropDown();
-                                    }
-
-                                    spinnerAutoComplete.setVisibility(View.GONE);
+                                        spinnerAutoComplete.setVisibility(View.GONE);
 
 //                                    responseName.setText(displayArray.toString());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Toast.makeText(MainActivity.this, "Auto-Complete request failed.", Toast.LENGTH_SHORT).show();
-                                spinnerAutoComplete.setVisibility(View.GONE);
-                            }
-                        });
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    Toast.makeText(MainActivity.this, "Auto-Complete request failed.", Toast.LENGTH_SHORT).show();
+                                    spinnerAutoComplete.setVisibility(View.GONE);
+                                }
+                            });
                     //add request to queue
                     requestQueue.add(jsonArrayRequest);
 
                 } else {
                     Toast.makeText(MainActivity.this, "Please enter valid charactors and the number of charactors should less than 5!", Toast.LENGTH_LONG).show();
+                    acTextView.dismissDropDown();
                 }
 
 
@@ -200,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
         }
 //        favInfoList.add(new FavoriteSymbol("AAPL","5","a","a","a"));
 //        favInfoList.add(new FavoriteSymbol("B","5","a","a","a"));
-//        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));,
+//        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));
         if(numFavReqDone == favSymbolList.size()) {
             FavAdapter favAdapter = new FavAdapter(this, R.layout.fav_row,favInfoList);
             listViewFav.setAdapter(favAdapter);
@@ -210,7 +230,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     } // end of onCreate method
-
 
 
     // Up date FavSymbolInfoList
@@ -270,7 +289,6 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(jsonArrayRequest);
     }
 
-
     // Perform get quote when click
     public void getQuote(View v){
 //        Toast.makeText(MainActivity.this, "Get Quete!", Toast.LENGTH_SHORT).show();
@@ -284,7 +302,8 @@ public class MainActivity extends AppCompatActivity {
             // Jump
             MainActivity.this.startActivity(intent);
         } else {
-            Toast.makeText(MainActivity.this, "Please enter a stock name or symbol!", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "Please enter a stock name or symbol!",
+                    Toast.LENGTH_LONG).show();
         }
     } // end of getQuote
 
