@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public CharSequence fixText(CharSequence invalidText) {
-                return "";
+                return invalidText.toString();
             }
         });
 
