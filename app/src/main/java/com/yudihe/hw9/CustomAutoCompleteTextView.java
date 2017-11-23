@@ -30,6 +30,6 @@ public class CustomAutoCompleteTextView extends android.support.v7.widget.AppCom
 
     @Override
     protected void replaceText(CharSequence text) {
-        //super.replaceText(text);
+        super.replaceText(text);
     }
 }
