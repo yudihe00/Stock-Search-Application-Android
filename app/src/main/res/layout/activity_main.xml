@@ -111,14 +111,7 @@
         android:layout_below="@+id/app_title"
         android:layout_centerHorizontal="true" />
 
-    <ProgressBar
-        android:id="@+id/progressLoadFav"
-        style="?android:attr/progressBarStyle"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/refreshTool"
-        android:layout_marginTop="40dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+
 
 
 
@@ -132,5 +125,13 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginBottom="14dp" />
+    <ProgressBar
+        android:id="@+id/progressLoadFav"
+        style="?android:attr/progressBarStyle"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/refreshTool"
+        android:layout_marginTop="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </android.widget.RelativeLayout>

@@ -16,8 +16,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
     // Autocomplete
     private AutoCompleteTextView acTextView;
     private ArrayAdapter adapter;
+
+    // context
+    private Context context;
 
     private RequestQueue requestQueue;
     private TextView textView;
@@ -73,11 +78,19 @@ public class MainActivity extends AppCompatActivity {
     // Number of Fav request done
     private int numFavReqDone;
 
+    // Refresh button
+    private ImageView imageViewRefresh;
+
+    // AutoRefresh switch
+    private Switch switchAutoRefresh;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        context = this;
 //        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
@@ -205,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
+        // Fav refresh and load when view is create
         // Fav load progressBar
         spinnerFavLoading = (ProgressBar) findViewById(R.id.progressLoadFav);
         spinnerFavLoading.setVisibility(View.VISIBLE);
@@ -227,6 +240,36 @@ public class MainActivity extends AppCompatActivity {
             listViewFav.setAdapter(favAdapter);
             spinnerFavLoading.setVisibility(View.INVISIBLE);
         }
+
+        imageViewRefresh = (ImageView) findViewById(R.id.imageViewRefresh);
+        switchAutoRefresh=(Switch)findViewById(R.id.switchAutoRefresh);
+        imageViewRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Fav refresh and load when view is create
+                // Fav load progressBar
+                spinnerFavLoading = (ProgressBar) findViewById(R.id.progressLoadFav);
+                spinnerFavLoading.setVisibility(View.VISIBLE);
+                // Fav ListView
+                listViewFav = (ListView) findViewById(R.id.ListViewFav);
+                favInfoList = new ArrayList<FavoriteSymbol>();
+                // Get current all fav symbol name
+                favSymbolList = FavSingleton.getInstance().getFavList();
+                numFavReqDone=0;
+                // Get detail data, store in favInfoList
+                for (int i=0; i<favSymbolList.size(); i++) {
+                    upDateSymbolInfoList(favSymbolList.get(i),context);
+                }
+//        favInfoList.add(new FavoriteSymbol("AAPL","5","a","a","a"));
+//        favInfoList.add(new FavoriteSymbol("B","5","a","a","a"));
+//        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));
+                if(numFavReqDone == favSymbolList.size()) {
+                    FavAdapter favAdapter = new FavAdapter(context, R.layout.fav_row,favInfoList);
+                    listViewFav.setAdapter(favAdapter);
+                    spinnerFavLoading.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
 
 
 
