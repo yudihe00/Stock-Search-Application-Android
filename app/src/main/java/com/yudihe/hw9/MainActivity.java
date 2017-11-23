@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Validation for autocompleteTextView
     private boolean mValidateResult = false;
-    private String pattern = "^[a-zA-Z]{1,5}$";
+    private String pattern = "(^\\s*)";
 
     // progress bar
     private ProgressBar spinnerAutoComplete;
@@ -100,10 +101,10 @@ public class MainActivity extends AppCompatActivity {
         acTextView.setValidator(new AutoCompleteTextView.Validator() {
             @Override
             public boolean isValid(CharSequence text) {
-                if(text.toString().matches(pattern)) {
-                    mValidateResult = true;
-                } else {
+                if(text.toString().matches(pattern)|| text.toString().length()==0) {
                     mValidateResult = false;
+                } else {
+                    mValidateResult = true;
                 }
                 return mValidateResult;
             }
@@ -128,10 +129,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                mValidateResult = false;
-                acTextView.performValidation();
-
-                if (mValidateResult) {
+//                mValidateResult = false;
+//                acTextView.performValidation();
+//
+//                if (mValidateResult) {
                     spinnerAutoComplete.setVisibility(View.VISIBLE);
                     spinnerAutoComplete.bringToFront();
 
@@ -144,60 +145,60 @@ public class MainActivity extends AppCompatActivity {
                     String url = GlobalVariables.PHP_URL+"?name="+symbol;
 
                     JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                            new Response.Listener<JSONArray>() {
-                                @Override
-                                public void onResponse(JSONArray response) {
+                        new Response.Listener<JSONArray>() {
+                            @Override
+                            public void onResponse(JSONArray response) {
 //                                textView.setText("Trimmed response: " + response.toString());
 //                                    Toast.makeText(MainActivity.this, "change!", Toast.LENGTH_SHORT).show();
-                                    StringBuilder names = new StringBuilder();
-                                    names.append("Parsed names from the response: ");
-                                    try {
-                                        //adapter.clear();
-                                        valueArray.clear();
-                                        displayArray.clear();
-                                        for(int i = 0; i < response.length(); i++){
-                                            JSONObject jresponse = response.getJSONObject(i);
-                                            String value = jresponse.getString("value");
+                                StringBuilder names = new StringBuilder();
+                                names.append("Parsed names from the response: ");
+                                try {
+                                    //adapter.clear();
+                                    valueArray.clear();
+                                    displayArray.clear();
+                                    for(int i = 0; i < response.length(); i++){
+                                        JSONObject jresponse = response.getJSONObject(i);
+                                        String value = jresponse.getString("value");
 
-                                            String display = jresponse.getString("display");
-                                            valueArray.add(value);
-                                            displayArray.add(display);
+                                        String display = jresponse.getString("display");
+                                        valueArray.add(value);
+                                        displayArray.add(display);
 
-                                            // acTextView.setAdapter(adapter);
+                                        // acTextView.setAdapter(adapter);
 
-                                        }
+                                    }
 
-                                        //adapter.notifyDataSetChanged();
-                                        adapter = new ArrayAdapter(context, android.R.layout.select_dialog_item, displayArray);
-                                        acTextView.setAdapter(adapter);
+                                    //adapter.notifyDataSetChanged();
+                                    adapter = new ArrayAdapter(context, android.R.layout.select_dialog_item, displayArray);
+                                    acTextView.setAdapter(adapter);
 
-                                        // The first autocomplete always not shown, need to set dropdown view
-                                        if(acTextView.getText().toString().length()==1) {
-                                            acTextView.showDropDown();
-                                        }
+                                    // The first autocomplete always not shown, need to set dropdown view
+//                                    if(acTextView.getText().toString().length()==1) {
+                                        acTextView.showDropDown();
+//                                    }
 
-                                        spinnerAutoComplete.setVisibility(View.GONE);
+                                    spinnerAutoComplete.setVisibility(View.GONE);
 
 //                                    responseName.setText(displayArray.toString());
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                            },
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    Toast.makeText(MainActivity.this, "Auto-Complete request failed.", Toast.LENGTH_SHORT).show();
-                                    spinnerAutoComplete.setVisibility(View.GONE);
-                                }
-                            });
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                //Toast.makeText(MainActivity.this, "Auto-Complete request failed.", Toast.LENGTH_SHORT).show();
+                                spinnerAutoComplete.setVisibility(View.GONE);
+                            }
+                        });
                     //add request to queue
                     requestQueue.add(jsonArrayRequest);
 
-                } else {
-                    Toast.makeText(MainActivity.this, "Please enter valid charactors and the number of charactors should less than 5!", Toast.LENGTH_LONG).show();
-                    acTextView.dismissDropDown();
-                }
+//                } else {
+//                    Toast.makeText(MainActivity.this, "Please enter valid charactors and the number of charactors should less than 5!", Toast.LENGTH_LONG).show();
+//                    acTextView.dismissDropDown();
+//                }
 
 
             }
@@ -272,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        spinnerAutoComplete.setVisibility(View.INVISIBLE);
+                        //spinnerFavLoading.setVisibility(View.INVISIBLE);
                         numFavReqDone++;
                         Toast.makeText(context, "Failed to refresh "+symbol+" info.", Toast.LENGTH_SHORT).show();
                         //textViewErrorMain.setVisibility(View.VISIBLE);
@@ -285,6 +286,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+        jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
+                0,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         //add request to queue
         requestQueue.add(jsonArrayRequest);
     }
@@ -292,13 +298,18 @@ public class MainActivity extends AppCompatActivity {
     // Perform get quote when click
     public void getQuote(View v){
 //        Toast.makeText(MainActivity.this, "Get Quete!", Toast.LENGTH_SHORT).show();
+        mValidateResult = false;
         acTextView.performValidation();
+
         if (mValidateResult) {
 //            Toast.makeText(MainActivity.this, "Correct Text", Toast.LENGTH_LONG).show();
             //  Initial intent for jump to StockMainACtivity
             Intent intent = new Intent(MainActivity.this, StockActivity.class);
+            String symbolName = acTextView.getText().toString().toUpperCase();
+            String[] tmp = symbolName.split(" ");
+            symbolName=tmp[0];
             // Put symbol data in intent, transfer to StockMainActivity
-            intent.putExtra("symbol", acTextView.getText().toString());
+            intent.putExtra("symbol", symbolName);
             // Jump
             MainActivity.this.startActivity(intent);
         } else {
@@ -309,6 +320,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Clear when click
     public void clear(View v){
-        Toast.makeText(MainActivity.this, "Clear!", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MainActivity.this, "Clear!", Toast.LENGTH_SHORT).show();
+        acTextView.setText("");
     }// end of Clear
 }
