@@ -37,4 +37,8 @@ public class FavoriteSymbol {
     public String getChangeString() {
         return changeString;
     }
+
+    public float getChangeFloat(){
+        return Float.parseFloat(change);
+    }
 }

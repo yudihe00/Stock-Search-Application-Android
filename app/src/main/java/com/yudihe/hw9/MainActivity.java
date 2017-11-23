@@ -473,7 +473,7 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
-                10000,
+                20000,
                 0,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         //add request to queue
