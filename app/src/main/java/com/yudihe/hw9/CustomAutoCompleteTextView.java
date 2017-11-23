@@ -20,16 +20,11 @@ public class CustomAutoCompleteTextView extends android.support.v7.widget.AppCom
 
     /** Returns the symbol name corresponding to the selected item */
     @Override
-<<<<<<< HEAD
-    protected void replaceText(CharSequence text) {
-        super.replaceText(text);
-=======
     protected CharSequence convertSelectionToString(Object selectedItem) {
         /** Each item in the autocompetetextview suggestion list is a hashmap object */
         String str=selectedItem.toString();
         String[] tmp = str.split(" ");
         str=tmp[0];
         return str;
->>>>>>> parent of b39dd02... autocomplete part done
     }
 }
