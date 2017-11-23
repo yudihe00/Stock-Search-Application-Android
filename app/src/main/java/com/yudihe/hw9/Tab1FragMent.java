@@ -27,6 +27,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -47,6 +48,7 @@ import com.facebook.share.widget.ShareDialog;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 /**
  * Created by heyudi on 11/19/17.
@@ -102,6 +104,14 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
     // ImageView for fbshare and favorite, work as buttons
     private ImageView imageViewFbShare;
     private ImageView imageViewFav;
+
+
+    // FavList, store the symbol of favorite
+    private ArrayList<String> favList;
+
+    // time out
+    private int MY_SOCKET_TIMEOUT_MS = 8000;
+
 
 
     // share dialogue
@@ -281,6 +291,13 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                         textViewError.setVisibility(View.VISIBLE);
                     }
                 });
+
+        // timeout issue
+        jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
+                MY_SOCKET_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
         //add request to queue
         requestQueue.add(jsonArrayRequest);
 
