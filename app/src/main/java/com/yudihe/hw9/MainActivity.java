@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             return null;
         }
-    } // end of AutoCompleteAdapter, not write
+    } // end of AutoCompleteAdapter, not write.
 
     // Up date FavSymbolInfoList
     private void upDateSymbolInfoList(final String symbol, final Context context) {
