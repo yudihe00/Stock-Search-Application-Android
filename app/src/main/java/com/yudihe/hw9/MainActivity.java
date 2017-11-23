@@ -3,6 +3,7 @@ package com.yudihe.hw9;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -35,6 +37,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +46,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.yudihe.hw9.Tab1FragMent.fromJson;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -102,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         context = this;
 //        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -239,7 +245,8 @@ public class MainActivity extends AppCompatActivity {
         listViewFav = (ListView) findViewById(R.id.ListViewFav);
         favInfoList = new ArrayList<FavoriteSymbol>();
         // Get current all fav symbol name
-        favSymbolList = FavSingleton.getInstance().getFavList();
+        //favSymbolList = FavSingleton.getInstance().getFavList();
+        favSymbolList = getCurrFavList(this);
         numFavReqDone=0;
         // Get detail data, store in favInfoList
         for (int i=0; i<favSymbolList.size(); i++) {
@@ -267,20 +274,21 @@ public class MainActivity extends AppCompatActivity {
                 listViewFav = (ListView) findViewById(R.id.ListViewFav);
                 favInfoList = new ArrayList<FavoriteSymbol>();
                 // Get current all fav symbol name
-                favSymbolList = FavSingleton.getInstance().getFavList();
+                //favSymbolList = FavSingleton.getInstance().getFavList();
+                favSymbolList = getCurrFavList(context);
                 numFavReqDone=0;
                 // Get detail data, store in favInfoList
                 for (int i=0; i<favSymbolList.size(); i++) {
                     upDateSymbolInfoList(favSymbolList.get(i),context);
                 }
-        //        favInfoList.add(new FavoriteSymbol("AAPL","5","a","a","a"));
-        //        favInfoList.add(new FavoriteSymbol("B","5","a","a","a"));
-        //        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));
-                if(numFavReqDone == favSymbolList.size()) {
-                    FavAdapter favAdapter = new FavAdapter(context, R.layout.fav_row,favInfoList);
-                    listViewFav.setAdapter(favAdapter);
-                    spinnerFavLoading.setVisibility(View.INVISIBLE);
-                }
+//        //        favInfoList.add(new FavoriteSymbol("AAPL","5","a","a","a"));
+//        //        favInfoList.add(new FavoriteSymbol("B","5","a","a","a"));
+//        //        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));
+//                if(numFavReqDone == favSymbolList.size()) {
+//                    FavAdapter favAdapter = new FavAdapter(context, R.layout.fav_row,favInfoList);
+//                    listViewFav.setAdapter(favAdapter);
+//                    spinnerFavLoading.setVisibility(View.INVISIBLE);
+//                }
             }
         });
 
@@ -390,7 +398,8 @@ public class MainActivity extends AppCompatActivity {
         listViewFav = (ListView) findViewById(R.id.ListViewFav);
         favInfoList = new ArrayList<FavoriteSymbol>();
         // Get current all fav symbol name
-        favSymbolList = FavSingleton.getInstance().getFavList();
+//        favSymbolList = FavSingleton.getInstance().getFavList();
+        favSymbolList = getCurrFavList(context);
         numFavReqDone=0;
         // Get detail data, store in favInfoList
         for (int i=0; i<favSymbolList.size(); i++) {
@@ -464,8 +473,8 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
                 0,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         //add request to queue
         requestQueue.add(jsonArrayRequest);
@@ -499,4 +508,17 @@ public class MainActivity extends AppCompatActivity {
         //Toast.makeText(MainActivity.this, "Clear!", Toast.LENGTH_SHORT).show();
         acTextView.setText("");
     }// end of Clear
+
+    public static ArrayList<String> getCurrFavList(Context context) {
+        String favString = PreferenceManager.getDefaultSharedPreferences(context).getString("FAVSYMBOL", "");
+        ArrayList<String> favList=new ArrayList<>();
+        if (favString!=""){
+
+            favList = (ArrayList<String>) fromJson(favString,
+                    new TypeToken<ArrayList<String>>() {
+                    }.getType());
+        }
+
+        return favList;
+    }
 }

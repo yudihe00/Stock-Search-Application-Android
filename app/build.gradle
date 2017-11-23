@@ -36,6 +36,9 @@ dependencies {
 //     support volley
     compile 'com.android.volley:volley:1.0.0'
 
+    // json
+    compile 'com.google.code.gson:gson:2.8.2'
+
     // for fb sdk
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
 

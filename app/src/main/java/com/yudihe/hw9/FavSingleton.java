@@ -25,6 +25,7 @@ public class FavSingleton {
     //Add element to array
     public void addToFav(String value) {
         list.add(value);
+
     }
 
     // Add symbol into FavList

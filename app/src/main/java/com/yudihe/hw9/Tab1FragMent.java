@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -45,10 +46,15 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+
+import static com.yudihe.hw9.MainActivity.getCurrFavList;
 
 /**
  * Created by heyudi on 11/19/17.
@@ -104,6 +110,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
     // ImageView for fbshare and favorite, work as buttons
     private ImageView imageViewFbShare;
     private ImageView imageViewFav;
+    private String favString;
 
     // FavList, store the symbol of favorite
     private ArrayList<String> favList;
@@ -170,7 +177,15 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         imageViewFav = (ImageView) view.findViewById(R.id.favButton);
 
         // OnCreate view, if the symbol is in FavList, the FAvImage should change to full star
-        favList = FavSingleton.getInstance().getFavList();
+
+        // get fav name from local
+//        favString = PreferenceManager.getDefaultSharedPreferences(context).getString("FAVSYMBOL", "");
+//        favList = (ArrayList<String>) fromJson(favString,
+//                new TypeToken<ArrayList<String>>() {
+//                }.getType());
+        favList=getCurrFavList(getActivity());
+
+        //favList = FavSingleton.getInstance().getFavList();
         if(favList.contains(symbol)) {
             imageViewFav.setImageResource(R.drawable.filled);
         }
@@ -179,11 +194,22 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         imageViewFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(FavSingleton.getInstance().getFavList().contains(symbol)) {
-                    FavSingleton.getInstance().deleteFromFav(symbol);
+                // get fav name from local
+//                favString = PreferenceManager.getDefaultSharedPreferences(context).getString("FAVSYMBOL", "");
+//                favList = (ArrayList<String>) fromJson(favString,
+//                        new TypeToken<ArrayList<String>>() {
+//                        }.getType());
+                favList=getCurrFavList(getActivity());
+
+                if(favList.contains(symbol)) {
+                    //FavSingleton.getInstance().deleteFromFav(symbol);
+                    favList.remove(symbol);
+                    PreferenceManager.getDefaultSharedPreferences(context).edit().putString("FAVSYMBOL", toJson(favList)).apply();
                     imageViewFav.setImageResource(R.drawable.empty);
                 } else {
-                    FavSingleton.getInstance().addToFav(symbol);
+                    //FavSingleton.getInstance().addToFav(symbol);
+                    favList.add(symbol);
+                    PreferenceManager.getDefaultSharedPreferences(context).edit().putString("FAVSYMBOL", toJson(favList)).apply();
                     imageViewFav.setImageResource(R.drawable.filled);
                 }
 
@@ -360,5 +386,12 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
             }
         });
         webViewCharts.loadUrl(GlobalVariables.LOCALBASE_URL+ "/hw9/hw9-1.html");
+    }
+
+    public static String toJson(Object jsonObject) {
+        return new Gson().toJson(jsonObject);
+    }
+    public static Object fromJson(String jsonString, Type type) {
+        return new Gson().fromJson(jsonString, type);
     }
 }
