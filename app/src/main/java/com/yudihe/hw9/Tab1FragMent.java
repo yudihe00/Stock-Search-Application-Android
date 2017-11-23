@@ -47,7 +47,6 @@ import com.facebook.share.widget.ShareDialog;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 /**
  * Created by heyudi on 11/19/17.
@@ -104,9 +103,6 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
     private ImageView imageViewFbShare;
     private ImageView imageViewFav;
 
-    // FavList, store the symbol of favorite
-    private ArrayList<String> favList;
-
 
     // share dialogue
     ShareDialog shareDialog;
@@ -122,6 +118,14 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab1_fragment,container,false);
+        //btnTEST = (Button) view.findViewById(R.id.btnTEST);
+//        btnTEST.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                Toast.makeText(getActivity(), "test for tab1", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
+
 
         textViewTest = (TextView) view.findViewById(R.id.textViewTest);
         symbol = ((StockActivity)getActivity()).getSymbol();
@@ -165,29 +169,6 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         imageViewFbShare = (ImageView) view.findViewById(R.id.fbButton);
         imageViewFav = (ImageView) view.findViewById(R.id.favButton);
 
-        // OnCreate view, if the symbol is in FavList, the FAvImage should change to full star
-        favList = FavSingleton.getInstance().getFavList();
-        if(favList.contains(symbol)) {
-            imageViewFav.setImageResource(R.drawable.filled);
-        }
-
-        // Favorite click listener
-        imageViewFav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(FavSingleton.getInstance().getFavList().contains(symbol)) {
-                    FavSingleton.getInstance().deleteFromFav(symbol);
-                    imageViewFav.setImageResource(R.drawable.empty);
-                } else {
-                    FavSingleton.getInstance().addToFav(symbol);
-                    imageViewFav.setImageResource(R.drawable.filled);
-                }
-
-            }
-        });
-
-
-        // FB share
         shareDialog = new ShareDialog(this);
         callbackManager = CallbackManager.Factory.create();
 
