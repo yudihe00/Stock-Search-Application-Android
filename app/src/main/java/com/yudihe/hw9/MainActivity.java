@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
         }
 //        favInfoList.add(new FavoriteSymbol("AAPL","5","a","a","a"));
 //        favInfoList.add(new FavoriteSymbol("B","5","a","a","a"));
-//        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));
+//        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));,
         if(numFavReqDone == favSymbolList.size()) {
             FavAdapter favAdapter = new FavAdapter(this, R.layout.fav_row,favInfoList);
             listViewFav.setAdapter(favAdapter);
