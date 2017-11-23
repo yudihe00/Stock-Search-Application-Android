@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -83,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
 
     // AutoRefresh switch
     private Switch switchAutoRefresh;
+
+    // AutoRefresh thread
+    private Thread threadAutoRefresh;
 
 
 
@@ -241,14 +245,14 @@ public class MainActivity extends AppCompatActivity {
             spinnerFavLoading.setVisibility(View.INVISIBLE);
         }
 
+        // Refresh Fav table
         imageViewRefresh = (ImageView) findViewById(R.id.imageViewRefresh);
-        switchAutoRefresh=(Switch)findViewById(R.id.switchAutoRefresh);
         imageViewRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Fav refresh and load when view is create
                 // Fav load progressBar
-                spinnerFavLoading = (ProgressBar) findViewById(R.id.progressLoadFav);
+                //spinnerFavLoading = (ProgressBar) findViewById(R.id.progressLoadFav);
                 spinnerFavLoading.setVisibility(View.VISIBLE);
                 // Fav ListView
                 listViewFav = (ListView) findViewById(R.id.ListViewFav);
@@ -260,9 +264,9 @@ public class MainActivity extends AppCompatActivity {
                 for (int i=0; i<favSymbolList.size(); i++) {
                     upDateSymbolInfoList(favSymbolList.get(i),context);
                 }
-//        favInfoList.add(new FavoriteSymbol("AAPL","5","a","a","a"));
-//        favInfoList.add(new FavoriteSymbol("B","5","a","a","a"));
-//        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));
+        //        favInfoList.add(new FavoriteSymbol("AAPL","5","a","a","a"));
+        //        favInfoList.add(new FavoriteSymbol("B","5","a","a","a"));
+        //        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));
                 if(numFavReqDone == favSymbolList.size()) {
                     FavAdapter favAdapter = new FavAdapter(context, R.layout.fav_row,favInfoList);
                     listViewFav.setAdapter(favAdapter);
@@ -271,9 +275,74 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // AutoRefresh Fav table
+        threadAutoRefresh = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(numFavReqDone == favSymbolList.size()) {
+                                    refreshFavTable();
+                                    Toast.makeText(context,"refresh",Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(context,"last refresh request not done.Cannot make new refresh request.",Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+                        });
+                        Thread.sleep(10000);
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+        switchAutoRefresh=(Switch)findViewById(R.id.switchAutoRefresh);
+        switchAutoRefresh.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Toast.makeText(context,"check state "+Boolean.toString(isChecked),Toast.LENGTH_SHORT).show();
+                if(isChecked) {
+                    threadAutoRefresh.start();
+                }
+                else {
+                    threadAutoRefresh.interrupt();
+                }
+            }
+        });
+
 
 
     } // end of onCreate method
+
+    // RefreshFavTable
+    private void refreshFavTable() {
+        // Fav refresh and load when view is create
+        // Fav load progressBar
+        //spinnerFavLoading = (ProgressBar) findViewById(R.id.progressLoadFav);
+        spinnerFavLoading.setVisibility(View.VISIBLE);
+        // Fav ListView
+        listViewFav = (ListView) findViewById(R.id.ListViewFav);
+        favInfoList = new ArrayList<FavoriteSymbol>();
+        // Get current all fav symbol name
+        favSymbolList = FavSingleton.getInstance().getFavList();
+        numFavReqDone=0;
+        // Get detail data, store in favInfoList
+        for (int i=0; i<favSymbolList.size(); i++) {
+            upDateSymbolInfoList(favSymbolList.get(i),context);
+        }
+        //        favInfoList.add(new FavoriteSymbol("AAPL","5","a","a","a"));
+        //        favInfoList.add(new FavoriteSymbol("B","5","a","a","a"));
+        //        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));
+        if(numFavReqDone == favSymbolList.size()) {
+            FavAdapter favAdapter = new FavAdapter(context, R.layout.fav_row,favInfoList);
+            listViewFav.setAdapter(favAdapter);
+            spinnerFavLoading.setVisibility(View.INVISIBLE);
+        }
+
+    }
 
 
     // Up date FavSymbolInfoList
