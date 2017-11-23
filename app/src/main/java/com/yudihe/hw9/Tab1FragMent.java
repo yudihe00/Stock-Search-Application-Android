@@ -124,7 +124,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         View view = inflater.inflate(R.layout.tab1_fragment,container,false);
 
         textViewTest = (TextView) view.findViewById(R.id.textViewTest);
-        symbol = ((StockActivity)getActivity()).getSymbol();
+        symbol = ((StockActivity)getActivity()).getSymbol().toUpperCase();
         textViewTest.setText("symbol: "+symbol);
         requestQueue = Volley.newRequestQueue(getActivity()); // 'this' is the Context
 
@@ -296,8 +296,8 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         progressBar.setVisibility(View.INVISIBLE);
-                        //Toast.makeText(getActivity(), "Http request failed!", Toast.LENGTH_SHORT).show();
-                        textViewError.setVisibility(View.VISIBLE);
+                        Toast.makeText(getActivity(), "Http request failed!", Toast.LENGTH_SHORT).show();
+                        //textViewError.setVisibility(View.VISIBLE);
                     }
                 });
         //add request to queue
