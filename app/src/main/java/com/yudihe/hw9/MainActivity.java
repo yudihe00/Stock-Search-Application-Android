@@ -171,6 +171,42 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+<<<<<<< HEAD
+=======
+
+        acTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                acTextView.dismissDropDown();
+
+            }
+        });
+
+        // Fav load progressBar
+        spinnerFavLoading = (ProgressBar) findViewById(R.id.progressLoadFav);
+        spinnerFavLoading.setVisibility(View.VISIBLE);
+        // Fav ListView
+        listViewFav = (ListView) findViewById(R.id.ListViewFav);
+        favInfoList = new ArrayList<FavoriteSymbol>();
+        // Get current all fav symbol name
+        favSymbolList = FavSingleton.getInstance().getFavList();
+        numFavReqDone=0;
+        // Get detail data, store in favInfoList
+        for (int i=0; i<favSymbolList.size(); i++) {
+            upDateSymbolInfoList(favSymbolList.get(i),this);
+        }
+//        favInfoList.add(new FavoriteSymbol("AAPL","5","a","a","a"));
+//        favInfoList.add(new FavoriteSymbol("B","5","a","a","a"));
+//        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));,
+        if(numFavReqDone == favSymbolList.size()) {
+            FavAdapter favAdapter = new FavAdapter(this, R.layout.fav_row,favInfoList);
+            listViewFav.setAdapter(favAdapter);
+            spinnerFavLoading.setVisibility(View.INVISIBLE);
+        }
+
+
+
+>>>>>>> 9-favorite-2
     } // end of onCreate method
 
     class AutoCompleteAdapter extends ArrayAdapter {
@@ -198,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             return null;
         }
-    } // end of AutoCompleteAdapter, not write
+    } // end of AutoCompleteAdapter, not write.
 
 
 
