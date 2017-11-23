@@ -2,7 +2,9 @@ package com.yudihe.hw9;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -20,6 +22,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -87,6 +90,12 @@ public class MainActivity extends AppCompatActivity {
 
     // AutoRefresh thread
     private Thread threadAutoRefresh;
+
+    // Spinner for sort
+    private Spinner spinnerSortBy;
+    private Spinner spinnerOrder;
+    ArrayAdapter<String> arrayAdapterSortBy;
+    ArrayAdapter<String> arrayAdapterOrder;
 
 
 
@@ -312,7 +321,61 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        // Sort By setting
+        spinnerSortBy = (Spinner) findViewById(R.id.spinnerSortBy);
+        arrayAdapterSortBy = new ArrayAdapter<String>(context,
+                android.R.layout.simple_list_item_1,getResources().getStringArray(R.array.SortByArray)) {
+            @Override
+            public boolean isEnabled(int position) {
+                if (position==0){
+                    return false;
+                }
+                return true;
+            }
 
+            @Override
+            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                // TODO Auto-generated method stub
+                View mView = super.getDropDownView(position, convertView, parent);
+                TextView mTextView = (TextView) mView;
+                if (position == 0) {
+                    mTextView.setTextColor(Color.GRAY);
+                } else {
+                    mTextView.setTextColor(Color.BLACK);
+                }
+                return mView;
+            }
+        };
+        arrayAdapterSortBy.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerSortBy.setAdapter(arrayAdapterSortBy);
+
+        // Order setting
+        spinnerOrder = (Spinner) findViewById(R.id.spinnerOrder);
+        arrayAdapterOrder = new ArrayAdapter<String>(context,
+                android.R.layout.simple_list_item_1,getResources().getStringArray(R.array.OrderArray)) {
+            @Override
+            public boolean isEnabled(int position) {
+                if (position==0){
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                // TODO Auto-generated method stub
+                View mView = super.getDropDownView(position, convertView, parent);
+                TextView mTextView = (TextView) mView;
+                if (position == 0) {
+                    mTextView.setTextColor(Color.GRAY);
+                } else {
+                    mTextView.setTextColor(Color.BLACK);
+                }
+                return mView;
+            }
+        };
+        arrayAdapterOrder.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerOrder.setAdapter(arrayAdapterOrder);
 
 
     } // end of onCreate method

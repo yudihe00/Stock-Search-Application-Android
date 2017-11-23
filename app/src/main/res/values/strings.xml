@@ -22,4 +22,16 @@
         <item>STOCH</item>
         <item>BBANDS</item>
     </string-array>
+    <string-array name="SortByArray">
+        <item>Sort By</item>
+        <item>Default</item>
+        <item>Symbol</item>
+        <item>Price</item>
+        <item>Change</item>
+    </string-array>
+    <string-array name="OrderArray">
+        <item>Order</item>
+        <item>Ascending</item>
+        <item>Descending</item>
+    </string-array>
 </resources>
