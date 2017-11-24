@@ -8,12 +8,12 @@ package com.yudihe.hw9;
 public class FavoriteSymbol {
     private String symbol;
     private String price;
-    private String timestamp;
+    private int timestamp;
     private String change;
     private String changePercent;
     private String changeString;
 
-    public FavoriteSymbol(String symbol, String price, String timestamp,
+    public FavoriteSymbol(String symbol, String price, int timestamp,
                           String change,String changePercent) {
         this.symbol = symbol;
         this.price = price;
@@ -31,7 +31,7 @@ public class FavoriteSymbol {
         return price;
     }
 
-    public String getTimeStampt() {
+    public int getTimeStampt() {
         return timestamp;
     }
     public String getChangeString() {
@@ -40,5 +40,9 @@ public class FavoriteSymbol {
 
     public float getChangeFloat(){
         return Float.parseFloat(change);
+    }
+
+    public float getPriceFloat(){
+        return Float.parseFloat(price);
     }
 }

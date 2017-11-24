@@ -44,6 +44,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -240,55 +242,18 @@ public class MainActivity extends AppCompatActivity {
         // Fav refresh and load when view is create
         // Fav load progressBar
         spinnerFavLoading = (ProgressBar) findViewById(R.id.progressLoadFav);
-        spinnerFavLoading.setVisibility(View.VISIBLE);
         // Fav ListView
         listViewFav = (ListView) findViewById(R.id.ListViewFav);
-        favInfoList = new ArrayList<FavoriteSymbol>();
-        // Get current all fav symbol name
-        //favSymbolList = FavSingleton.getInstance().getFavList();
-        favSymbolList = getCurrFavList(this);
-        numFavReqDone=0;
-        // Get detail data, store in favInfoList
-        for (int i=0; i<favSymbolList.size(); i++) {
-            upDateSymbolInfoList(favSymbolList.get(i),this);
-        }
-//        favInfoList.add(new FavoriteSymbol("AAPL","5","a","a","a"));
-//        favInfoList.add(new FavoriteSymbol("B","5","a","a","a"));
-//        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));
-        if(numFavReqDone == favSymbolList.size()) {
-            FavAdapter favAdapter = new FavAdapter(this, R.layout.fav_row,favInfoList);
-            listViewFav.setAdapter(favAdapter);
-            spinnerFavLoading.setVisibility(View.INVISIBLE);
-        }
+
+        // Set initial FavTable
+        refreshFavTable();
 
         // Refresh Fav table
         imageViewRefresh = (ImageView) findViewById(R.id.imageViewRefresh);
         imageViewRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Fav refresh and load when view is create
-                // Fav load progressBar
-                //spinnerFavLoading = (ProgressBar) findViewById(R.id.progressLoadFav);
-                spinnerFavLoading.setVisibility(View.VISIBLE);
-                // Fav ListView
-                listViewFav = (ListView) findViewById(R.id.ListViewFav);
-                favInfoList = new ArrayList<FavoriteSymbol>();
-                // Get current all fav symbol name
-                //favSymbolList = FavSingleton.getInstance().getFavList();
-                favSymbolList = getCurrFavList(context);
-                numFavReqDone=0;
-                // Get detail data, store in favInfoList
-                for (int i=0; i<favSymbolList.size(); i++) {
-                    upDateSymbolInfoList(favSymbolList.get(i),context);
-                }
-//        //        favInfoList.add(new FavoriteSymbol("AAPL","5","a","a","a"));
-//        //        favInfoList.add(new FavoriteSymbol("B","5","a","a","a"));
-//        //        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));
-//                if(numFavReqDone == favSymbolList.size()) {
-//                    FavAdapter favAdapter = new FavAdapter(context, R.layout.fav_row,favInfoList);
-//                    listViewFav.setAdapter(favAdapter);
-//                    spinnerFavLoading.setVisibility(View.INVISIBLE);
-//                }
+                refreshFavTable();
             }
         });
 
@@ -329,7 +294,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        // Sort By setting
+
+
+
+
+        // Setting for Sort By
         spinnerSortBy = (Spinner) findViewById(R.id.spinnerSortBy);
         arrayAdapterSortBy = new ArrayAdapter<String>(context,
                 android.R.layout.simple_list_item_1,getResources().getStringArray(R.array.SortByArray)) {
@@ -357,7 +326,25 @@ public class MainActivity extends AppCompatActivity {
         arrayAdapterSortBy.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSortBy.setAdapter(arrayAdapterSortBy);
 
-        // Order setting
+        spinnerSortBy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String sortBySelect = spinnerSortBy.getSelectedItem().toString();
+                String orderSelect = spinnerOrder.getSelectedItem().toString();
+                if (!orderSelect.equals("Order") ){
+                    favInfoList=sortFavInfoList(favInfoList,sortBySelect,orderSelect);
+                    FavAdapter favAdapter = new FavAdapter(context, R.layout.fav_row,favInfoList);
+                    listViewFav.setAdapter(favAdapter);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        // Setting for order
         spinnerOrder = (Spinner) findViewById(R.id.spinnerOrder);
         arrayAdapterOrder = new ArrayAdapter<String>(context,
                 android.R.layout.simple_list_item_1,getResources().getStringArray(R.array.OrderArray)) {
@@ -384,7 +371,24 @@ public class MainActivity extends AppCompatActivity {
         };
         arrayAdapterOrder.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerOrder.setAdapter(arrayAdapterOrder);
+        spinnerOrder.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String sortBySelect = spinnerSortBy.getSelectedItem().toString();
+                String orderSelect = spinnerOrder.getSelectedItem().toString();
+                if (!sortBySelect.equals("Sort By") ){
+                    favInfoList=sortFavInfoList(favInfoList,sortBySelect,orderSelect);
+                    FavAdapter favAdapter = new FavAdapter(context, R.layout.fav_row,favInfoList);
+                    listViewFav.setAdapter(favAdapter);
 
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
     } // end of onCreate method
 
@@ -409,6 +413,14 @@ public class MainActivity extends AppCompatActivity {
         //        favInfoList.add(new FavoriteSymbol("B","5","a","a","a"));
         //        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));
         if(numFavReqDone == favSymbolList.size()) {
+            String sortBySelect = spinnerSortBy.getSelectedItem().toString();
+            String orderSelect = spinnerOrder.getSelectedItem().toString();
+            if(!sortBySelect.equals("Sort By") && !orderSelect.equals("Order")) {
+                favInfoList=sortFavInfoList(favInfoList,sortBySelect,orderSelect);
+            } else {
+                favInfoList=sortFavInfoList(favInfoList,"Default","Ascending");
+            }
+
             FavAdapter favAdapter = new FavAdapter(context, R.layout.fav_row,favInfoList);
             listViewFav.setAdapter(favAdapter);
             spinnerFavLoading.setVisibility(View.INVISIBLE);
@@ -434,7 +446,7 @@ public class MainActivity extends AppCompatActivity {
                             String symbol=response.getString("symbol");
                             String price = response.getString("last price");
 //                            String timestamp = Long.toString(new Date().getTime());
-                            String timestamp = Integer.toString(favSymbolList.indexOf(symbol));
+                            int timestamp = favSymbolList.indexOf(symbol);
                             // Set change cell in table
                             String change = response.getString("change");
                             String changePercent = response.getString("change percent");
@@ -443,6 +455,12 @@ public class MainActivity extends AppCompatActivity {
 
                             // End of loading
                             if(numFavReqDone == favSymbolList.size()) {
+
+                                String sortBySelect = spinnerSortBy.getSelectedItem().toString();
+                                String orderSelect = spinnerOrder.getSelectedItem().toString();
+                                if(!sortBySelect.equals("Sort By") && !orderSelect.equals("Order")) {
+                                    favInfoList=sortFavInfoList(favInfoList,sortBySelect,orderSelect);
+                                }
                                 FavAdapter favAdapter = new FavAdapter(context, R.layout.fav_row,favInfoList);
                                 listViewFav.setAdapter(favAdapter);
                                 spinnerFavLoading.setVisibility(View.INVISIBLE);
@@ -460,7 +478,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         //spinnerFavLoading.setVisibility(View.INVISIBLE);
                         numFavReqDone++;
-                        Toast.makeText(context, "Failed to refresh "+symbol+" info.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Failed to refresh "+symbol+" info.",
+                                Toast.LENGTH_SHORT).show();
                         //textViewErrorMain.setVisibility(View.VISIBLE);
 
                         // End of loading
@@ -504,7 +523,7 @@ public class MainActivity extends AppCompatActivity {
     } // end of getQuote
 
     // Clear when click
-    public void clear(View v){
+    private void clear(View v){
         //Toast.makeText(MainActivity.this, "Clear!", Toast.LENGTH_SHORT).show();
         acTextView.setText("");
     }// end of Clear
@@ -520,5 +539,73 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return favList;
+    }
+
+    private ArrayList<FavoriteSymbol> sortFavInfoList(ArrayList<FavoriteSymbol> favInfoList,
+                                                      String sortBy, String order) {
+
+        if (sortBy.equals("Price")){
+            Collections.sort(favInfoList,new Comparator<FavoriteSymbol>() {
+                @Override
+                public int compare(FavoriteSymbol s1,FavoriteSymbol s2) {
+                    if(s1.getPriceFloat()-s2.getPriceFloat()>=0) {
+                        return 1;
+                    }
+                    else {
+                        return -1;
+                    }
+                }
+            });
+            if(order.equals("Descending")){
+                Collections.reverse(favInfoList);
+            }
+        }
+
+        if (sortBy.equals("Change")){
+            Collections.sort(favInfoList,new Comparator<FavoriteSymbol>() {
+                @Override
+                public int compare(FavoriteSymbol s1,FavoriteSymbol s2) {
+                    if(s1.getChangeFloat()-s2.getChangeFloat()>=0) {
+                        return 1;
+                    }
+                    else {
+                        return -1;
+                    }
+                }
+            });
+            if(order.equals("Descending")){
+                Collections.reverse(favInfoList);
+            }
+        }
+
+        if (sortBy.equals("Symbol")){
+            Collections.sort(favInfoList,new Comparator<FavoriteSymbol>() {
+                @Override
+                public int compare(FavoriteSymbol s1,FavoriteSymbol s2) {
+                    return s1.getSymbolName().compareTo(s2.getSymbolName());
+                }
+            });
+            if(order.equals("Descending")){
+                Collections.reverse(favInfoList);
+            }
+        }
+
+        if (sortBy.equals("Default")){
+            Collections.sort(favInfoList,new Comparator<FavoriteSymbol>() {
+                @Override
+                public int compare(FavoriteSymbol s1,FavoriteSymbol s2) {
+                    if(s1.getTimeStampt()-s2.getTimeStampt()>=0) {
+                        return 1;
+                    }
+                    else {
+                        return -1;
+                    }
+                }
+            });
+            if(order.equals("Descending")){
+                Collections.reverse(favInfoList);
+            }
+        }
+        return favInfoList;
     }
 }
