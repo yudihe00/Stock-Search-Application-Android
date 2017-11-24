@@ -11,6 +11,9 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -50,6 +53,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.yudihe.hw9.Tab1FragMent.fromJson;
+import static com.yudihe.hw9.Tab1FragMent.toJson;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -244,6 +248,18 @@ public class MainActivity extends AppCompatActivity {
         spinnerFavLoading = (ProgressBar) findViewById(R.id.progressLoadFav);
         // Fav ListView
         listViewFav = (ListView) findViewById(R.id.ListViewFav);
+        registerForContextMenu(listViewFav);
+
+//        // Long press to delete Favsymbol
+//        listViewFav.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//                TextView symbolView=(TextView)view.findViewById(R.id.favSymbol);
+//                String symbol = symbolView.getText().toString();
+//                favSymbolList=getCurrFavList(context);
+//                return true;
+//            }
+//        });
 
         // Set initial FavTable
         refreshFavTable();
@@ -392,6 +408,40 @@ public class MainActivity extends AppCompatActivity {
 
     } // end of onCreate method
 
+    // Create context manu for long press listview of favorite, pop up automatically
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        if(v.getId()==R.id.ListViewFav ){
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+            menu.setHeaderTitle("Remove from Favorites?");
+            String[] menuItems={"Yes","No"};
+            for(int i=0;i<menuItems.length;i++) {
+                menu.add(Menu.NONE,i,i,menuItems[i]);
+            }
+
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        int menuItemIndex = item.getItemId();
+        String[] menuItems={"Yes","No"};
+        String menuItemName = menuItems[menuItemIndex];
+        String listItemName = favInfoList.get(info.position).getSymbolName();
+
+        if(menuItemName.equals("Yes")){
+            favSymbolList = getCurrFavList(context);
+            favSymbolList.remove(listItemName);
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putString("FAVSYMBOL", toJson(favSymbolList)).apply();
+            refreshFavTable();
+        }
+
+        Toast.makeText(context,"Select "+listItemName+" to "+menuItemName,Toast.LENGTH_SHORT).show();
+        //text.setText(String.format("Selected %s for item %s", menuItemName, listItemName));
+        return true;
+    }
+
     // RefreshFavTable
     private void refreshFavTable() {
         // Fav refresh and load when view is create
@@ -399,7 +449,10 @@ public class MainActivity extends AppCompatActivity {
         //spinnerFavLoading = (ProgressBar) findViewById(R.id.progressLoadFav);
         spinnerFavLoading.setVisibility(View.VISIBLE);
         // Fav ListView
-        listViewFav = (ListView) findViewById(R.id.ListViewFav);
+//        listViewFav = (ListView) findViewById(R.id.ListViewFav);
+
+
+
         favInfoList = new ArrayList<FavoriteSymbol>();
         // Get current all fav symbol name
 //        favSymbolList = FavSingleton.getInstance().getFavList();
