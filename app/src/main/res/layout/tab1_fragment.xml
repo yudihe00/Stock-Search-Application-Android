@@ -27,11 +27,6 @@
             android:layout_below="@+id/detailTitle"
             android:layout_marginTop="50dp"
             android:layout_centerHorizontal="true"
-            android:indeterminateTint="@color/black"
-            android:maxHeight="200dp"
-            android:maxWidth="200dp"
-            android:minHeight="200dp"
-            android:minWidth="200dp"
             android:layout_height="wrap_content" />
 
         <TextView

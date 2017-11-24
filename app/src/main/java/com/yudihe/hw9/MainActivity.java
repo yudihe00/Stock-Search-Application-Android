@@ -260,6 +260,38 @@ public class MainActivity extends AppCompatActivity {
 //                return true;
 //            }
 //        });
+        listViewFav.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView symbolView=(TextView)view.findViewById(R.id.favSymbol);
+                String symbol = symbolView.getText().toString();
+                Intent intent = new Intent(MainActivity.this, StockActivity.class);
+
+                // Put symbol data in intent, transfer to StockMainActivity
+                intent.putExtra("symbol", symbol);
+                // Jump
+                MainActivity.this.startActivity(intent);
+            }
+        });
+
+//        listViewFav.setOnItemClickListener();Listener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                TextView symbolView=(TextView)view.findViewById(R.id.favSymbol);
+//                String symbol = symbolView.getText().toString();
+//                Intent intent = new Intent(MainActivity.this, StockActivity.class);
+//
+//                // Put symbol data in intent, transfer to StockMainActivity
+//                intent.putExtra("symbol", symbol);
+//                // Jump
+//                MainActivity.this.startActivity(intent);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
 
         // Set initial FavTable
         refreshFavTable();
@@ -310,8 +342,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-
 
 
         // Setting for Sort By
