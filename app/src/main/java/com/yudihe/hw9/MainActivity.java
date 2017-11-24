@@ -274,25 +274,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        listViewFav.setOnItemClickListener();Listener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                TextView symbolView=(TextView)view.findViewById(R.id.favSymbol);
-//                String symbol = symbolView.getText().toString();
-//                Intent intent = new Intent(MainActivity.this, StockActivity.class);
-//
-//                // Put symbol data in intent, transfer to StockMainActivity
-//                intent.putExtra("symbol", symbol);
-//                // Jump
-//                MainActivity.this.startActivity(intent);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//
-//            }
-//        });
-
         // Set initial FavTable
         refreshFavTable();
 
@@ -316,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
                             public void run() {
                                 if(numFavReqDone == favSymbolList.size()) {
                                     refreshFavTable();
-                                    Toast.makeText(context,"refresh",Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(context,"refresh",Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(context,"last refresh request not done.Cannot make new refresh request.",Toast.LENGTH_SHORT).show();
                                 }
@@ -467,7 +448,7 @@ public class MainActivity extends AppCompatActivity {
             refreshFavTable();
         }
 
-        Toast.makeText(context,"Select "+listItemName+" to "+menuItemName,Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context,"Select "+listItemName+" to "+menuItemName,Toast.LENGTH_SHORT).show();
         //text.setText(String.format("Selected %s for item %s", menuItemName, listItemName));
         return true;
     }
@@ -543,6 +524,8 @@ public class MainActivity extends AppCompatActivity {
                                 String orderSelect = spinnerOrder.getSelectedItem().toString();
                                 if(!sortBySelect.equals("Sort By") && !orderSelect.equals("Order")) {
                                     favInfoList=sortFavInfoList(favInfoList,sortBySelect,orderSelect);
+                                } else {
+                                    favInfoList=sortFavInfoList(favInfoList,"Default","Ascending");
                                 }
                                 FavAdapter favAdapter = new FavAdapter(context, R.layout.fav_row,favInfoList);
                                 listViewFav.setAdapter(favAdapter);
@@ -567,6 +550,13 @@ public class MainActivity extends AppCompatActivity {
 
                         // End of loading
                         if(numFavReqDone == favSymbolList.size()) {
+                            String sortBySelect = spinnerSortBy.getSelectedItem().toString();
+                            String orderSelect = spinnerOrder.getSelectedItem().toString();
+                            if(!sortBySelect.equals("Sort By") && !orderSelect.equals("Order")) {
+                                favInfoList=sortFavInfoList(favInfoList,sortBySelect,orderSelect);
+                            } else {
+                                favInfoList=sortFavInfoList(favInfoList,"Default","Ascending");
+                            }
                             FavAdapter favAdapter = new FavAdapter(context, R.layout.fav_row,favInfoList);
                             listViewFav.setAdapter(favAdapter);
                             spinnerFavLoading.setVisibility(View.INVISIBLE);
@@ -606,7 +596,7 @@ public class MainActivity extends AppCompatActivity {
     } // end of getQuote
 
     // Clear when click
-    private void clear(View v){
+    public void clear(View v){
         //Toast.makeText(MainActivity.this, "Clear!", Toast.LENGTH_SHORT).show();
         acTextView.setText("");
     }// end of Clear

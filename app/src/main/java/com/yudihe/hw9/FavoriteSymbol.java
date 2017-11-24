@@ -43,6 +43,7 @@ public class FavoriteSymbol {
     }
 
     public float getPriceFloat(){
-        return Float.parseFloat(price);
+        String priceNew = price.replace(",","");
+        return Float.parseFloat(priceNew);
     }
 }

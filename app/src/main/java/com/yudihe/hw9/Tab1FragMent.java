@@ -250,7 +250,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
                 selectIndicator = spinnerIndicators.getSelectedItem().toString();
                 currDrawIndicator = selectIndicator;
                 currDrawUrl = "";
-                Toast.makeText(getActivity(),"begin to draw "+selectIndicator+" chart",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(),"begin to draw "+selectIndicator+" chart",Toast.LENGTH_SHORT).show();
                 drawCharts(symbol,selectIndicator);
             }
         });
