@@ -309,6 +309,7 @@ public class MainActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                 }
             }
+
         };
         switchAutoRefresh=(Switch)findViewById(R.id.switchAutoRefresh);
         switchAutoRefresh.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -320,6 +321,33 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else {
                     threadAutoRefresh.interrupt();
+                    
+                    //threadAutoRefresh.setThread(null);
+                    // AutoRefresh Fav table
+                    threadAutoRefresh = new Thread() {
+                        @Override
+                        public void run() {
+                            try {
+                                while (!isInterrupted()) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if(numFavReqDone == favSymbolList.size()) {
+                                                refreshFavTable();
+                                                //Toast.makeText(context,"refresh",Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(context,"last refresh request not done.Cannot make new refresh request.",Toast.LENGTH_SHORT).show();
+                                            }
+
+                                        }
+                                    });
+                                    Thread.sleep(10000);
+                                }
+                            } catch (InterruptedException e) {
+                            }
+                        }
+
+                    };
                 }
             }
         });
