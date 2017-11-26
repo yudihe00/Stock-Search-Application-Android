@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
         switchAutoRefresh.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Toast.makeText(context,"check state "+Boolean.toString(isChecked),Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context,"check state "+Boolean.toString(isChecked),Toast.LENGTH_SHORT).show();
                 if(isChecked) {
                     threadAutoRefresh.start();
                 }
