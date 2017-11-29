@@ -504,7 +504,10 @@ public class MainActivity extends AppCompatActivity {
         //        favInfoList.add(new FavoriteSymbol("AAPL","5","a","a","a"));
         //        favInfoList.add(new FavoriteSymbol("B","5","a","a","a"));
         //        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));
-        if(numFavReqDone == favSymbolList.size()) {
+        if(favSymbolList.size() == 0){
+            spinnerFavLoading.setVisibility(View.INVISIBLE);
+        }
+        else if(numFavReqDone == favSymbolList.size()) {
             String sortBySelect = spinnerSortBy.getSelectedItem().toString();
             String orderSelect = spinnerOrder.getSelectedItem().toString();
             if(!sortBySelect.equals("Sort By") && !orderSelect.equals("Order")) {
