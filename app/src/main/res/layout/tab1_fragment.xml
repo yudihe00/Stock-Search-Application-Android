@@ -272,12 +272,21 @@
 
 
         </TableLayout>
+        <ProgressBar
+            android:id="@+id/progressBarIndicator"
+            style="?android:attr/progressBarStyle"
+            android:layout_below="@+id/detailTable"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
         <WebView
             android:id="@+id/webViewChart"
             android:layout_below="@id/detailTable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"/>
+            android:layout_marginBottom="20dp">
+        </WebView>
 
         <TextView
             android:id="@+id/textViewTest"

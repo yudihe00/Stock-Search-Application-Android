@@ -104,6 +104,9 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
     private WebView webViewCharts;
     private Context context;
 
+    // Progress bar for indicator
+    private ProgressBar progressBarIndicator;
+
     // Stock symbol name, get from StockActivity;
     private String symbol;
 
@@ -170,6 +173,10 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
 
         // WebView for charts
         webViewCharts = (WebView) view.findViewById(R.id.webViewChart);
+
+        // Progressbar for indicators
+        progressBarIndicator = (ProgressBar) view.findViewById(R.id.progressBarIndicator);
+        progressBarIndicator.setVisibility(View.INVISIBLE);
 
 
         // ImageView for fbshare and favorite
@@ -246,6 +253,8 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
 
         changeTextView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                // show the progress bar
+                progressBarIndicator.setVisibility(View.VISIBLE);
                 changeTextView.setTextColor(Color.parseColor("#aca8a8"));
                 changeTextView.setClickable(false);
                 selectIndicator = spinnerIndicators.getSelectedItem().toString();
