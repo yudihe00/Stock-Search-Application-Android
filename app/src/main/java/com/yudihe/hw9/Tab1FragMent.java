@@ -175,6 +175,7 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         // ImageView for fbshare and favorite
         imageViewFbShare = (ImageView) view.findViewById(R.id.fbButton);
         imageViewFav = (ImageView) view.findViewById(R.id.favButton);
+        currDrawUrl="";
 
         // OnCreate view, if the symbol is in FavList, the FAvImage should change to full star
 
