@@ -10,6 +10,8 @@
     <string name="section_format">Hello World from section: %1$d</string>
 
     <string name="facebook_app_id">343224549474373</string>
+    <string name="fb_login_protocol_scheme">fb343224549474373</string>
+
 
     <string-array name="indicators">
         <item>Price</item>
