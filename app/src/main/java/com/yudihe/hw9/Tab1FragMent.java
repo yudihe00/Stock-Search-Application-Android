@@ -44,7 +44,6 @@ import org.json.JSONObject;
 // for fb sdk
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 import com.google.gson.Gson;
@@ -55,7 +54,6 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.yudihe.hw9.MainActivity.getCurrFavList;
 
 /**
@@ -223,9 +221,6 @@ public class Tab1FragMent extends android.support.v4.app.Fragment {
         // FB share
         shareDialog = new ShareDialog(this);
         callbackManager = CallbackManager.Factory.create();
-
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(getActivity());
 
         imageViewFbShare.setOnClickListener(new View.OnClickListener() {
             @Override
