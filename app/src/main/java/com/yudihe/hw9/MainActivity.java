@@ -263,6 +263,38 @@ public class MainActivity extends AppCompatActivity {
         listViewFav.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                // interrupt autorefresh thread
+                threadAutoRefresh.interrupt();
+
+                //threadAutoRefresh.setThread(null);
+                // AutoRefresh Fav table
+                threadAutoRefresh = new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            while (!isInterrupted()) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if(numFavReqDone == favSymbolList.size()) {
+                                            refreshFavTable();
+                                            //Toast.makeText(context,"refresh",Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(context,"last refresh request not done.Cannot make new refresh request.",Toast.LENGTH_SHORT).show();
+                                        }
+
+                                    }
+                                });
+                                Thread.sleep(10000);
+                            }
+                        } catch (InterruptedException e) {
+                        }
+                    }
+
+                };
+
+
                 TextView symbolView=(TextView)view.findViewById(R.id.favSymbol);
                 String symbol = symbolView.getText().toString();
                 Intent intent = new Intent(MainActivity.this, StockActivity.class);
@@ -611,6 +643,38 @@ public class MainActivity extends AppCompatActivity {
 
         if (mValidateResult) {
 //            Toast.makeText(MainActivity.this, "Correct Text", Toast.LENGTH_LONG).show();
+
+            // interrupt autorefresh thread
+            threadAutoRefresh.interrupt();
+
+            //threadAutoRefresh.setThread(null);
+            // AutoRefresh Fav table
+            threadAutoRefresh = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        while (!isInterrupted()) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(numFavReqDone == favSymbolList.size()) {
+                                        refreshFavTable();
+                                        //Toast.makeText(context,"refresh",Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(context,"last refresh request not done.Cannot make new refresh request.",Toast.LENGTH_SHORT).show();
+                                    }
+
+                                }
+                            });
+                            Thread.sleep(10000);
+                        }
+                    } catch (InterruptedException e) {
+                    }
+                }
+
+            };
+
+
             //  Initial intent for jump to StockMainACtivity
             Intent intent = new Intent(MainActivity.this, StockActivity.class);
             String symbolName = acTextView.getText().toString().toUpperCase();
