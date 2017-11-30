@@ -46,4 +46,10 @@ public class FavoriteSymbol {
         String priceNew = price.replace(",","");
         return Float.parseFloat(priceNew);
     }
+
+    public float getChangePercentFloat(){
+        String part[] = changePercent.split("%");
+        String changePercentFloat = part[0];
+        return Float.parseFloat(changePercentFloat);
+    }
 }

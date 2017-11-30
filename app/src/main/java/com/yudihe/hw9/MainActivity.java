@@ -729,6 +729,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        if (sortBy.equals("Change(%)")){
+            Collections.sort(favInfoList,new Comparator<FavoriteSymbol>() {
+                @Override
+                public int compare(FavoriteSymbol s1,FavoriteSymbol s2) {
+                    if(s1.getChangePercentFloat()-s2.getChangePercentFloat()>=0) {
+                        return 1;
+                    }
+                    else {
+                        return -1;
+                    }
+                }
+            });
+            if(order.equals("Descending")){
+                Collections.reverse(favInfoList);
+            }
+        }
+
         if (sortBy.equals("Change")){
             Collections.sort(favInfoList,new Comparator<FavoriteSymbol>() {
                 @Override
