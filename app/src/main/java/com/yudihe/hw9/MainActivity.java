@@ -499,6 +499,7 @@ public class MainActivity extends AppCompatActivity {
         int menuItemIndex = item.getItemId();
         String[] menuItems={"Yes","No"};
         String menuItemName = menuItems[menuItemIndex];
+        favSymbolList = getCurrFavList(context);
         String listItemName = favInfoList.get(info.position).getSymbolName();
 
         if(menuItemName.equals("Yes")){
@@ -506,6 +507,8 @@ public class MainActivity extends AppCompatActivity {
             favSymbolList.remove(listItemName);
             PreferenceManager.getDefaultSharedPreferences(context).edit().putString("FAVSYMBOL", toJson(favSymbolList)).apply();
             refreshFavTable();
+
+            // if no symbol in favSymbolList
         }
 
         //Toast.makeText(context,"Select "+listItemName+" to "+menuItemName,Toast.LENGTH_SHORT).show();
@@ -538,6 +541,9 @@ public class MainActivity extends AppCompatActivity {
         //        favInfoList.add(new FavoriteSymbol("CL","5","a","a","a"));
         if(favSymbolList.size() == 0){
             spinnerFavLoading.setVisibility(View.INVISIBLE);
+            FavAdapter favAdapter = new FavAdapter(context, R.layout.fav_row,favInfoList);
+            listViewFav.setAdapter(favAdapter);
+            
         }
         else if(numFavReqDone == favSymbolList.size()) {
             String sortBySelect = spinnerSortBy.getSelectedItem().toString();
